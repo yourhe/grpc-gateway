@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	descriptor "google.golang.org/genproto/protobuf"
 )
 
 // Registry is a registry of information extracted from plugin.CodeGeneratorRequest.

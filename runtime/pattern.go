@@ -21,7 +21,7 @@ type op struct {
 	operand int
 }
 
-// Pattern is a template pattern of http request paths defined in third_party/googleapis/google/api/http.proto.
+// Pattern is a template pattern of http request paths defined in google.golang.org/genproto/googleapis/api/serviceconfig/annotations.proto.
 type Pattern struct {
 	// ops is a list of operations
 	ops []op

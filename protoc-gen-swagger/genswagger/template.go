@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	pbdescriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
+	pbdescriptor "google.golang.org/genproto/protobuf"
 )
 
 // findServicesMessagesAndEnumerations discovers all messages and enums defined in the RPC methods of the service.

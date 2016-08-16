@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	gogen "github.com/golang/protobuf/protoc-gen-go/generator"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/httprule"
+	descriptor "google.golang.org/genproto/protobuf"
 )
 
 // GoPackage represents a golang package

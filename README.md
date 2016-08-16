@@ -88,8 +88,7 @@ Make sure that your `$GOPATH/bin` is in your `$PATH`.
    ```sh
    protoc -I/usr/local/include -I. \
      -I$GOPATH/src \
-     -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-     --go_out=Mgoogle/api/annotations.proto=github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/google/api,plugins=grpc:. \
+     --go_out=Mgoogle/api/annotations.proto=google.golang.org/genproto/googleapis/api/serviceconfig,plugins=grpc:. \
      path/to/your_service.proto
    ```
    
@@ -101,13 +100,11 @@ Make sure that your `$GOPATH/bin` is in your `$PATH`.
      ```sh
      protoc -I/usr/local/include -I. \
        -I$GOPATH/src \
-       -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
        --ruby_out=. \
        path/to/your/service_proto
      
      protoc -I/usr/local/include -I. \
        -I$GOPATH/src \
-       -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
        --plugin=protoc-gen-grpc-ruby=grpc_ruby_plugin \
        --grpc-ruby_out=. \
        path/to/your/service.proto
@@ -118,7 +115,6 @@ Make sure that your `$GOPATH/bin` is in your `$PATH`.
    ```sh
    protoc -I/usr/local/include -I. \
      -I$GOPATH/src \
-     -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
      --grpc-gateway_out=logtostderr=true:. \
      path/to/your_service.proto
    ```
@@ -176,7 +172,6 @@ Make sure that your `$GOPATH/bin` is in your `$PATH`.
    ```sh
    protoc -I/usr/local/include -I. \
      -I$GOPATH/src \
-     -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
      --swagger_out=logtostderr=true:. \
      path/to/your_service.proto
    ```

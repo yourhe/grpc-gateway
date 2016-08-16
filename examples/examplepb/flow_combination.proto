@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = "examplepb";
 package grpc.gateway.examples.examplepb;
 
-import "google/api/annotations.proto";
+import "google.golang.org/genproto/googleapis/api/serviceconfig/annotations.proto";
 
 message EmptyProto {}
 

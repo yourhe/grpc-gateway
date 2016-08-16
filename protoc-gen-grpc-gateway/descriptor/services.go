@@ -6,9 +6,9 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
-	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/httprule"
-	options "github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/google/api"
+	serviceconfig "google.golang.org/genproto/googleapis/api/serviceconfig"
+	descriptor "google.golang.org/genproto/protobuf"
 )
 
 // loadServices registers services and their methods from "targetFile" to "r".
@@ -50,7 +50,7 @@ func (r *Registry) loadServices(file *File) error {
 	return nil
 }
 
-func (r *Registry) newMethod(svc *Service, md *descriptor.MethodDescriptorProto, opts *options.HttpRule) (*Method, error) {
+func (r *Registry) newMethod(svc *Service, md *descriptor.MethodDescriptorProto, opts *serviceconfig.HttpRule) (*Method, error) {
 	requestType, err := r.LookupMsg(svc.File.GetPackage(), md.GetInputType())
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (r *Registry) newMethod(svc *Service, md *descriptor.MethodDescriptorProto,
 		ResponseType:          responseType,
 	}
 
-	newBinding := func(opts *options.HttpRule, idx int) (*Binding, error) {
+	newBinding := func(opts *serviceconfig.HttpRule, idx int) (*Binding, error) {
 		var (
 			httpMethod   string
 			pathTemplate string
@@ -162,18 +162,18 @@ func (r *Registry) newMethod(svc *Service, md *descriptor.MethodDescriptorProto,
 	return meth, nil
 }
 
-func extractAPIOptions(meth *descriptor.MethodDescriptorProto) (*options.HttpRule, error) {
+func extractAPIOptions(meth *descriptor.MethodDescriptorProto) (*serviceconfig.HttpRule, error) {
 	if meth.Options == nil {
 		return nil, nil
 	}
-	if !proto.HasExtension(meth.Options, options.E_Http) {
+	if !proto.HasExtension(meth.Options, serviceconfig.E_Http) {
 		return nil, nil
 	}
-	ext, err := proto.GetExtension(meth.Options, options.E_Http)
+	ext, err := proto.GetExtension(meth.Options, serviceconfig.E_Http)
 	if err != nil {
 		return nil, err
 	}
-	opts, ok := ext.(*options.HttpRule)
+	opts, ok := ext.(*serviceconfig.HttpRule)
 	if !ok {
 		return nil, fmt.Errorf("extension is %T; want an HttpRule", ext)
 	}

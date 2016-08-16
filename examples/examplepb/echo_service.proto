@@ -7,7 +7,7 @@ option go_package = "examplepb";
 // a message.
 package grpc.gateway.examples.examplepb;
 
-import "google/api/annotations.proto";
+import "google.golang.org/genproto/googleapis/api/serviceconfig/annotations.proto";
 
 // SimpleMessage represents a simple message sent to the Echo service.
 message SimpleMessage {
