@@ -229,10 +229,11 @@ type Body struct {
 	FieldPath FieldPath
 }
 
-// RHS returns a right-hand-side expression in go to be used to initialize method request object.
-// It starts with "msgExpr", which is the go expression of the method request object.
-func (b Body) RHS(msgExpr string) string {
-	return b.FieldPath.RHS(msgExpr)
+// AssignableExpr returns an assignable expression in go to be used to
+// initialize method request object. It starts with "msgExpr", which is the
+// go expression of the method request object.
+func (b Body) AssignableExpr(msgExpr string) string {
+	return b.FieldPath.AssignableExpr(msgExpr)
 }
 
 // FieldPath is a path to a field from a request message.
@@ -255,9 +256,9 @@ func (p FieldPath) IsNestedProto3() bool {
 	return false
 }
 
-// RHS is a right-hand-side expression in go to be used to assign a value to the target field.
+// AssignableExpr is an assignable expression of the target field in go.
 // It starts with "msgExpr", which is the go expression of the method request object.
-func (p FieldPath) RHS(msgExpr string) string {
+func (p FieldPath) AssignableExpr(msgExpr string) string {
 	l := len(p)
 	if l == 0 {
 		return msgExpr
@@ -265,10 +266,10 @@ func (p FieldPath) RHS(msgExpr string) string {
 	components := []string{msgExpr}
 	for i, c := range p {
 		if i == l-1 {
-			components = append(components, c.RHS())
+			components = append(components, c.AssignableExpr())
 			continue
 		}
-		components = append(components, c.LHS())
+		components = append(components, c.ValueExpr())
 	}
 	return strings.Join(components, ".")
 }
@@ -282,8 +283,8 @@ type FieldPathComponent struct {
 	Target *Field
 }
 
-// RHS returns a right-hand-side expression in go for this field.
-func (c FieldPathComponent) RHS() string {
+// AssignableExpr returns an assignable expression in go for this field.
+func (c FieldPathComponent) AssignableExpr() string {
 	if c.Target.IsOneof() {
 		n := gogen.CamelCase(c.Name)
 		// alloc func is generated in the target .pb.gw.go file
@@ -292,8 +293,8 @@ func (c FieldPathComponent) RHS() string {
 	return gogen.CamelCase(c.Name)
 }
 
-// LHS returns a left-hand-side expression in go for this field.
-func (c FieldPathComponent) LHS() string {
+// ValueExpr returns a expression in go for the value of this field.
+func (c FieldPathComponent) ValueExpr() string {
 	if c.Target.Message.File.proto2() {
 		return fmt.Sprintf("Get%s()", gogen.CamelCase(c.Name))
 	}
