@@ -8,6 +8,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/httprule"
+	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/policy"
 	options "google.golang.org/genproto/googleapis/api/annotations"
 )
 
@@ -37,7 +38,20 @@ func (r *Registry) loadServices(file *File) error {
 			if err != nil {
 				return err
 			}
+			policy_opt, err := extractPolicyOptions(md)
+			if err != nil {
+				glog.Errorf("Failed to extract ApiMethodOptions from %s.%s: %v", svc.GetName(), md.GetName(), err)
+				return err
+			}
+			if policy_opt == nil {
+				glog.V(1).Infof("Found non-target method: %s.%s", svc.GetName(), md.GetName())
+			} else {
+				meth.Policy = policy_opt
+				glog.Error(meth)
+			}
+
 			svc.Methods = append(svc.Methods, meth)
+
 		}
 		if len(svc.Methods) == 0 {
 			continue
@@ -175,6 +189,24 @@ func extractAPIOptions(meth *descriptor.MethodDescriptorProto) (*options.HttpRul
 		return nil, err
 	}
 	opts, ok := ext.(*options.HttpRule)
+	if !ok {
+		return nil, fmt.Errorf("extension is %T; want an HttpRule", ext)
+	}
+	return opts, nil
+}
+
+func extractPolicyOptions(meth *descriptor.MethodDescriptorProto) (*policy.PolicyRule, error) {
+	if meth.Options == nil {
+		return nil, nil
+	}
+	if !proto.HasExtension(meth.Options, policy.E_Policy) {
+		return nil, nil
+	}
+	ext, err := proto.GetExtension(meth.Options, policy.E_Policy)
+	if err != nil {
+		return nil, err
+	}
+	opts, ok := ext.(*policy.PolicyRule)
 	if !ok {
 		return nil, fmt.Errorf("extension is %T; want an HttpRule", ext)
 	}

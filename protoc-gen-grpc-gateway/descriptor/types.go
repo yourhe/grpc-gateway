@@ -7,6 +7,7 @@ import (
 	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	gogen "github.com/golang/protobuf/protoc-gen-go/generator"
 	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/httprule"
+	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/policy"
 )
 
 // GoPackage represents a golang package
@@ -135,6 +136,9 @@ type Method struct {
 	// ResponseType is the message type of responses from this method.
 	ResponseType *Message
 	Bindings     []*Binding
+
+	//Policy ACL RBAC
+	Policy *policy.PolicyRule
 }
 
 // Binding describes how an HTTP endpoint is bound to a gRPC method.

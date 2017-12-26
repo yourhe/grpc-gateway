@@ -124,6 +124,10 @@ import (
 	{{range $i := .Imports}}{{if $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
 
 	{{range $i := .Imports}}{{if not $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
+	"github.com/ory/hydra/sdk/go/hydra/swagger"
+	"github.com/ory/hydra/sdk/go/hydra"
+	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/policy"
+	"strings"
 )
 
 var _ codes.Code
@@ -131,9 +135,11 @@ var _ io.Reader
 var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
+var HydraClient hydra.SDK
 `))
 
 	handlerTemplate = template.Must(template.New("handler").Parse(`
+
 {{if and .Method.GetClientStreaming .Method.GetServerStreaming}}
 {{template "bidi-streaming-request-func" .}}
 {{else if .Method.GetClientStreaming}}
@@ -308,7 +314,8 @@ var (
 `))
 
 	trailerTemplate = template.Must(template.New("trailer").Parse(`
-{{$UseRequestContext := .UseRequestContext}}
+		{{template "hydra-warden" .}}
+		{{$UseRequestContext := .UseRequestContext}}
 {{range $svc := .Services}}
 // Register{{$svc.GetName}}HandlerFromEndpoint is same as Register{{$svc.GetName}}Handler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
@@ -349,7 +356,24 @@ func Register{{$svc.GetName}}Handler(ctx context.Context, mux *runtime.ServeMux,
 func Register{{$svc.GetName}}HandlerClient(ctx context.Context, mux *runtime.ServeMux, client {{$svc.GetName}}Client) error {
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
+	
+	{{if $m.Policy}}
+	// {{$m.Policy}}
+	//exampleAuthFunc(w,req,pathParams)
+	mux.Handle(
+		{{$b.HTTPMethod | printf "%q"}}, 
+		pattern_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}}, 
+		exampleAuthFunc(
+			&policy.PolicyRule{
+				Action:  "{{$svc.GetName}}:{{$m.GetName}}",
+			//	Action:    {{ $m.Policy.Action | printf "%q" }},
+				Resources: {{$m.Policy.Resources | printf "%q" }},
+				Effect:    "allow",
+			},
+			func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	{{else}}
 	mux.Handle({{$b.HTTPMethod | printf "%q"}}, pattern_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}}, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	{{end}}
 	{{- if $UseRequestContext }}
 		ctx, cancel := context.WithCancel(req.Context())
 	{{- else -}}
@@ -365,6 +389,7 @@ func Register{{$svc.GetName}}HandlerClient(ctx context.Context, mux *runtime.Ser
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+	
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -382,7 +407,13 @@ func Register{{$svc.GetName}}HandlerClient(ctx context.Context, mux *runtime.Ser
 		{{else}}
 		forward_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}}(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 		{{end}}
+	{{if $m.Policy}}
+	// {{$m.Policy}}
+	// end examplyAuthfunc
+	}))
+	{{else}}
 	})
+	{{end}}
 	{{end}}
 	{{end}}
 	return nil
@@ -397,11 +428,103 @@ var (
 )
 
 var (
+	
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
 	forward_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}} = {{if $m.GetServerStreaming}}runtime.ForwardResponseStream{{else}}runtime.ForwardResponseMessage{{end}}
 	{{end}}
 	{{end}}
+	
 )
+// type RequestPolicyMap map[string]*policy.PolicyRule 
+type RequestPolicyMap struct {
+	PolicyMap map[string]*policy.PolicyRule
+	PatternList []ServiceMothedMap
+}
+type ServiceMothedMap struct {
+	Name string
+	Pattern *runtime.Pattern
+}
+
+var (
+	RPM = RequestPolicyMap{
+	PolicyMap: map[string]*policy.PolicyRule{
+	{{range $m := $svc.Methods}}
+	{{range $b := $m.Bindings}}
+	
+		"{{$b.HTTPMethod}} {{$b.PathTmpl.Template}}" : &policy.PolicyRule{
+			Action:  "{{$svc.GetName}}:{{$m.GetName}}",
+			Resources: {{$m.Policy.Resources | printf "%q" }},
+			Effect:    "allow",
+		},
+	
+	{{end}}
+	{{end}}
+	},
+	// PatternList => []ServiceMothedMap
+	PatternList: []ServiceMothedMap{
+	{{range $m := $svc.Methods}}
+	{{range $b := $m.Bindings}}
+		{
+			Name:"{{$b.PathTmpl.Template}}",
+			Pattern: &pattern_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}},
+		},
+	{{end}}
+	{{end}}
+	},
+	}
+
+	
+)
+
 {{end}}`))
+
+	_ = template.Must(trailerTemplate.New("hydra-warden").Parse(`
+var (
+headerAuthorize = "authorization"
+)
+// func exampleAuthFunc(rule *policy.PolicyRule, w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
+func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		fn(w,req,pathParams)
+		return
+		val := req.Header.Get(headerAuthorize)
+		var expectedScheme = "bearer"
+		if val == "" {
+			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
+			// runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with v:"+val, http.StatusUnauthorized)
+			return
+
+		}
+		splits := strings.SplitN(val, " ", 2)
+		if len(splits) < 2 {
+			runtime.DefaultOtherErrorHandler(w, req, "Bad authorization string", http.StatusUnauthorized)
+
+			// return "", grpc.Errorf(codes.Unauthenticated, "Bad authorization string")
+			return
+		}
+		if strings.ToLower(splits[0]) != strings.ToLower(expectedScheme) {
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with ", http.StatusUnauthorized)
+			return
+			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
+		}
+		token := splits[1]
+		Accesstoken, _, err := HydraClient.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
+			Action:   rule.Action,
+			Resource: rule.Resources,
+			Token:    token,
+		})
+		if err != nil {
+			runtime.DefaultOtherErrorHandler(w, req, err.Error(), http.StatusUnauthorized)
+			return
+		}
+		if Accesstoken.Allowed != true {
+			runtime.DefaultOtherErrorHandler(w, req,"Request unauthenticated with not Allowed", http.StatusUnauthorized)
+			return
+		}
+		fn(w,req,pathParams)
+	}
+}
+	`))
 )

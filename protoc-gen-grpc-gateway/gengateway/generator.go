@@ -65,6 +65,7 @@ func (g *generator) Generate(targets []*descriptor.File) ([]*plugin.CodeGenerato
 	for _, file := range targets {
 		glog.V(1).Infof("Processing %s", file.GetName())
 		code, err := g.generate(file)
+
 		if err == errNoTargetService {
 			glog.V(1).Infof("%s: %v", file.GetName(), err)
 			continue
@@ -101,6 +102,7 @@ func (g *generator) generate(file *descriptor.File) (string, error) {
 		imports = append(imports, pkg)
 	}
 	for _, svc := range file.Services {
+
 		for _, m := range svc.Methods {
 			pkg := m.RequestType.File.GoPkg
 			if m.Options == nil || !proto.HasExtension(m.Options, options.E_Http) ||

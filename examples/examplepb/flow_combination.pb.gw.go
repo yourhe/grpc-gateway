@@ -985,6 +985,53 @@ func request_FlowCombination_RpcPathNestedStream_2(ctx context.Context, marshale
 
 }
 
+var (
+	headerAuthorize = "authorization"
+)
+
+// func exampleAuthFunc(w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
+func exampleAuthFunc(fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		val := req.Header.Get(headerAuthorize)
+		if val == "" {
+			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
+			// runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			return
+
+		}
+		splits := strings.SplitN(val, " ", 2)
+		if len(splits) < 2 {
+			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+
+			// return "", grpc.Errorf(codes.Unauthenticated, "Bad authorization string")
+			return
+		}
+		if strings.ToLower(splits[0]) != strings.ToLower(expectedScheme) {
+			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			return
+			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
+		}
+		token := splits[1]
+		if err != nil {
+			return nil, err
+		}
+		Accesstoken, _, err := hydraClinet.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
+			Action:   "write",
+			Resource: "rewrite:YourService:Echo",
+			Token:    token,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if Accesstoken.Allowed != true {
+			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			return
+		}
+	}
+}
+
 // RegisterFlowCombinationHandlerFromEndpoint is same as RegisterFlowCombinationHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterFlowCombinationHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
@@ -1035,6 +1082,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1064,6 +1112,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1093,6 +1142,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1122,6 +1172,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1151,6 +1202,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1180,6 +1232,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1209,6 +1262,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1238,6 +1292,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1267,6 +1322,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1296,6 +1352,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1325,6 +1382,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1354,6 +1412,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1383,6 +1442,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1412,6 +1472,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1441,6 +1502,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1470,6 +1532,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1499,6 +1562,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1528,6 +1592,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1557,6 +1622,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1586,6 +1652,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1615,6 +1682,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1644,6 +1712,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1673,6 +1742,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1702,6 +1772,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1731,6 +1802,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {
@@ -1760,6 +1832,7 @@ func RegisterFlowCombinationHandlerClient(ctx context.Context, mux *runtime.Serv
 				}
 			}(ctx.Done(), cn.CloseNotify())
 		}
+
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateContext(ctx, mux, req)
 		if err != nil {

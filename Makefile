@@ -77,7 +77,7 @@ ABE_EXAMPLE_SRCS=$(EXAMPLE_CLIENT_DIR)/abe/ABitOfEverythingServiceApi.go \
 		 $(EXAMPLE_CLIENT_DIR)/abe/ProtobufEmpty.go \
 		 $(EXAMPLE_CLIENT_DIR)/abe/Sub2IdMessage.go \
 		 $(EXAMPLE_CLIENT_DIR)/abe/SubStringMessage.go
-EXAMPLE_CLIENT_SRCS=$(ECHO_EXAMPLE_SRCS) $(ABE_EXAMPLE_SRCS)
+#EXAMPLE_CLIENT_SRCS=$(ECHO_EXAMPLE_SRCS) $(ABE_EXAMPLE_SRCS)
 SWAGGER_CODEGEN=swagger-codegen
 
 PROTOC_INC_PATH=$(dir $(shell which protoc))/../include
@@ -151,4 +151,30 @@ realclean: distclean
 	rm -f $(EXAMPLE_CLIENT_SRCS)
 	rm -f $(OPENAPIV2_GO)
 
-.PHONY: generate examples test lint clean distclean realclean
+EXAMPLES_BRAC=examples/examplepb/echo_service_policy.proto
+test1: $(GATEWAY_PLUGIN) $(EXAMPLES_BRAC)
+	protoc -I $(PROTOC_INC_PATH) -I. -I$(GOOGLEAPIS_DIR) --plugin=$(GATEWAY_PLUGIN) --grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. $(EXAMPLES_BRAC)
+	# $(EXAMPLES_GRPC)
+	# /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto	
+EXAMPLES_REWRITE_POLICY=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto
+REWRITE_DIR=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy
+GOPATH_DIR=$(GOPATH)/src
+REVERSEPROXY_DIR=gitlab.iyorhe.com/wfgz/reverseproxy
+test_rewrite: $(GATEWAY_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
+	protoc -I/usr/local/include -I. \
+	-I$(GOPATH_DIR) \
+	-I$(GOOGLEAPIS_DIR) \
+	-I$(REWRITE_DIR) \
+	--go_out=plugins=grpc:$(REWRITE_DIR)/. \
+	$(EXAMPLES_REWRITE_POLICY)
+	
+	protoc -I $(PROTOC_INC_PATH) \
+	-I$(GOPATH_DIR) \
+	-I. \
+	-I$(GOOGLEAPIS_DIR) \
+	-I$(REWRITE_DIR) \
+	--plugin=$(GATEWAY_PLUGIN) \
+	--grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(REWRITE_DIR)/. \
+	$(EXAMPLES_REWRITE_POLICY)
+
+.PHONY: generate examples test_rewrite test1 test lint clean distclean realclean 
