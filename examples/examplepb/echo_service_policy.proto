@@ -7,6 +7,7 @@ option go_package = "examplepb";
 // a message.
 package grpc.gateway.examples.examplepb;
 import "protoc-gen-grpc-gateway/policy/policy.proto";
+// import "policy/policy.proto";
 // import "google/protobuf/descriptor.proto";
 import "google/api/annotations.proto";
 
@@ -24,20 +25,26 @@ service EchoService {
 	// The message posted as the id parameter will also be
 	// returned.
 	rpc Echo(SimpleMessage) returns (SimpleMessage) {
+		option (grpc.gateway.policy.policy) = {
+            action: "<service-name>:<method-name>"
+            resources: "rn:<service-name>:<region>:<owner-id>:rule/<rule-id>/<request-id>"
+            effect: "allow"
+        };
 		option (google.api.http) = {
 			post: "/v1/example/echo/{id}"
 			additional_bindings {
 				get: "/v1/example/echo/{id}/{num}"
 			}
 		};
-		option (grpc.gateway.policy.policy) = {
-            action: "read"
-            resources: "*"
-            effect: "allow"
-        };
+		
 	}
 	// EchoBody method receives a simple message and returns it.
 	rpc EchoBody(SimpleMessage) returns (SimpleMessage) {
+		option (grpc.gateway.policy.policy) = {
+            action: "<service-name>:<method-name>"
+            resources: "rn:<service-name>:<region>:<owner-id>:rule/<rule-id>/<request-id>"
+            effect: "allow"
+        };
 		option (google.api.http) = {
 			post: "/v1/example/echo_body"
 			body: "*"

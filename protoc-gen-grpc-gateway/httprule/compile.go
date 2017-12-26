@@ -1,8 +1,6 @@
 package httprule
 
-import (
-	"github.com/grpc-ecosystem/grpc-gateway/utilities"
-)
+import "github.com/yourhe/grpc-gateway/utilities"
 
 const (
 	opcodeVersion = 1

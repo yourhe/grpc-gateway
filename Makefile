@@ -3,7 +3,7 @@
 # You don't have to rebuild these targets by yourself unless you develop
 # grpc-gateway itself.
 
-PKG=github.com/grpc-ecosystem/grpc-gateway
+PKG=github.com/yourhe/grpc-gateway
 GO_PLUGIN=bin/protoc-gen-go
 GO_PLUGIN_PKG=github.com/golang/protobuf/protoc-gen-go
 SWAGGER_PLUGIN=bin/protoc-gen-swagger
@@ -153,7 +153,11 @@ realclean: distclean
 
 EXAMPLES_BRAC=examples/examplepb/echo_service_policy.proto
 test1: $(GATEWAY_PLUGIN) $(EXAMPLES_BRAC)
-	protoc -I $(PROTOC_INC_PATH) -I. -I$(GOOGLEAPIS_DIR) --plugin=$(GATEWAY_PLUGIN) --grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. $(EXAMPLES_BRAC)
+	protoc -I $(PROTOC_INC_PATH) -I. -I$(GOPATH_DIR) -I$(GOOGLEAPIS_DIR) \
+	--plugin=$(GATEWAY_PLUGIN) \
+	--go_out=plugins=grpc:$(OUTPUT_DIR)/. \
+	--grpc-gateway_out=logtostderr=true:$(OUTPUT_DIR)/. \
+	$(EXAMPLES_BRAC)
 	# $(EXAMPLES_GRPC)
 	# /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto	
 EXAMPLES_REWRITE_POLICY=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto

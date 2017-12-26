@@ -7,8 +7,8 @@ import (
 	"text/template"
 
 	"github.com/golang/glog"
-	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
-	"github.com/grpc-ecosystem/grpc-gateway/utilities"
+	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
+	"github.com/yourhe/grpc-gateway/utilities"
 )
 
 type param struct {
@@ -126,7 +126,8 @@ import (
 	{{range $i := .Imports}}{{if not $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
 	"github.com/ory/hydra/sdk/go/hydra/swagger"
 	"github.com/ory/hydra/sdk/go/hydra"
-	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/policy"
+	// "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/policy"
+	"github.com/yourhe/grpc-gateway/policy"
 	"strings"
 )
 
@@ -451,12 +452,13 @@ var (
 	PolicyMap: map[string]*policy.PolicyRule{
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
-	
+		{{if $m.Policy}}
 		"{{$b.HTTPMethod}} {{$b.PathTmpl.Template}}" : &policy.PolicyRule{
 			Action:  "{{$svc.GetName}}:{{$m.GetName}}",
 			Resources: {{$m.Policy.Resources | printf "%q" }},
 			Effect:    "allow",
 		},
+		{{end}}
 	
 	{{end}}
 	{{end}}

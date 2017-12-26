@@ -6,8 +6,8 @@ import (
 
 	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	gogen "github.com/golang/protobuf/protoc-gen-go/generator"
-	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/httprule"
-	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/policy"
+	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/httprule"
+	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/policy"
 )
 
 // GoPackage represents a golang package

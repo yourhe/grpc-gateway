@@ -11,8 +11,8 @@ import (
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
-	gen "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/generator"
+	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
+	gen "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/generator"
 	options "google.golang.org/genproto/googleapis/api/annotations"
 )
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/grpc-ecosystem/grpc-gateway/utilities"
+	"github.com/yourhe/grpc-gateway/utilities"
 )
 
 const (
