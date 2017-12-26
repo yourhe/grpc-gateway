@@ -48,7 +48,6 @@ func (r *Registry) loadServices(file *File) error {
 				glog.V(1).Infof("Found non-target method: %s.%s", svc.GetName(), md.GetName())
 			} else {
 				meth.Policy = policy_opt
-				glog.Error(meth)
 			}
 
 			svc.Methods = append(svc.Methods, meth)
