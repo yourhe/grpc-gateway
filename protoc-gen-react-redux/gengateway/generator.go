@@ -3,7 +3,6 @@ package gengateway
 import (
 	"errors"
 	"fmt"
-	"go/format"
 	"path"
 	"path/filepath"
 	"strings"
@@ -11,8 +10,8 @@ import (
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
-	gen "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/generator"
+	"github.com/yourhe/grpc-gateway/protoc-gen-react-redux/descriptor"
+	gen "github.com/yourhe/grpc-gateway/protoc-gen-react-redux/generator"
 	options "google.golang.org/genproto/googleapis/api/annotations"
 )
 
@@ -78,24 +77,28 @@ func (g *generator) Generate(targets []*descriptor.File) ([]*plugin.CodeGenerato
 		if err != nil {
 			return nil, err
 		}
-		formatted, err := format.Source([]byte(code))
-		if err != nil {
-			glog.Errorf("%v: %s", err, code)
-			return nil, err
-		}
+		// formatted, err := format.Source([]byte(code))
+		formatted := []byte(code)
+		// if err != nil {
+		// 	glog.Errorf("%v: %s", err, code)
+		// 	return nil, err
+		// }
 		name := file.GetName()
 		if file.GoPkg.Path != "" {
 			name = fmt.Sprintf("%s/%s", file.GoPkg.Path, filepath.Base(name))
 		}
 		ext := filepath.Ext(name)
 		base := strings.TrimSuffix(name, ext)
-		output := fmt.Sprintf("%s.pb.gw.go", base)
+		output := fmt.Sprintf("%s.pb.redux.js", base)
 		files = append(files, &plugin.CodeGeneratorResponse_File{
 			Name:    proto.String(output),
 			Content: proto.String(string(formatted)),
 		})
 		glog.V(1).Infof("Will emit %s", output)
+		// glog.V(1).Infof("Will emit %s", output)
 	}
+	glog.Error(files)
+
 	return files, nil
 }
 

@@ -124,11 +124,7 @@ import (
 	{{range $i := .Imports}}{{if $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
 
 	{{range $i := .Imports}}{{if not $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
-	"github.com/ory/hydra/sdk/go/hydra/swagger"
-	"github.com/ory/hydra/sdk/go/hydra"
-	// "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/policy"
-	"github.com/yourhe/grpc-gateway/policy"
-	"strings"
+	
 )
 
 var _ codes.Code

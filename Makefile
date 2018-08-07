@@ -15,6 +15,7 @@ SWAGGER_PLUGIN_SRC= utilities/doc.go \
 		    protoc-gen-swagger/main.go
 SWAGGER_PLUGIN_PKG=$(PKG)/protoc-gen-swagger
 GATEWAY_PLUGIN=bin/protoc-gen-grpc-gateway
+REDUX_PLUGIN=bin/protoc-gen-react-redux
 GATEWAY_PLUGIN_PKG=$(PKG)/protoc-gen-grpc-gateway
 GATEWAY_PLUGIN_SRC= utilities/doc.go \
 		    utilities/pattern.go \
@@ -35,6 +36,26 @@ GATEWAY_PLUGIN_SRC= utilities/doc.go \
 		    protoc-gen-grpc-gateway/httprule/parse.go \
 		    protoc-gen-grpc-gateway/httprule/types.go \
 		    protoc-gen-grpc-gateway/main.go
+REDUX_PLUGIN_SRC= utilities/doc.go \
+		    utilities/pattern.go \
+		    utilities/trie.go \
+		    protoc-gen-react-redux \
+		    protoc-gen-react-redux/descriptor \
+		    protoc-gen-react-redux/descriptor/registry.go \
+		    protoc-gen-react-redux/descriptor/services.go \
+		    protoc-gen-react-redux/descriptor/types.go \
+		    protoc-gen-react-redux/generator \
+		    protoc-gen-react-redux/generator/generator.go \
+		    protoc-gen-react-redux/gengateway \
+		    protoc-gen-react-redux/gengateway/doc.go \
+		    protoc-gen-react-redux/gengateway/generator.go \
+		    protoc-gen-react-redux/gengateway/template.go \
+		    protoc-gen-react-redux/httprule \
+		    protoc-gen-react-redux/httprule/compile.go \
+		    protoc-gen-react-redux/httprule/parse.go \
+		    protoc-gen-react-redux/httprule/types.go \
+		    protoc-gen-react-redux/main.go
+REDUX_PLUGIN_PKG=$(PKG)/protoc-gen-react-redux
 GATEWAY_PLUGIN_FLAGS?=
 
 GOOGLEAPIS_DIR=third_party/googleapis
@@ -99,6 +120,9 @@ $(OPENAPIV2_GO): $(OPENAPIV2_PROTO) $(GO_PLUGIN)
 $(GATEWAY_PLUGIN): $(RUNTIME_GO) $(GATEWAY_PLUGIN_SRC)
 	go build -o $@ $(GATEWAY_PLUGIN_PKG)
 
+$(REDUX_PLUGIN): $(RUNTIME_GO) $(REDUX_PLUGIN_SRC)
+	go build -o $@ $(REDUX_PLUGIN_PKG)
+
 $(SWAGGER_PLUGIN): $(SWAGGER_PLUGIN_SRC) $(OPENAPIV2_GO)
 	go build -o $@ $(SWAGGER_PLUGIN_PKG)
 
@@ -153,14 +177,10 @@ realclean: distclean
 
 EXAMPLES_BRAC=examples/examplepb/echo_service_policy.proto
 test1: $(GATEWAY_PLUGIN) $(EXAMPLES_BRAC)
-	protoc -I $(PROTOC_INC_PATH) -I. -I$(GOPATH_DIR) -I$(GOOGLEAPIS_DIR) \
-	--plugin=$(GATEWAY_PLUGIN) \
-	--go_out=plugins=grpc:$(OUTPUT_DIR)/. \
-	--grpc-gateway_out=logtostderr=true:$(OUTPUT_DIR)/. \
-	$(EXAMPLES_BRAC)
+	protoc -I $(PROTOC_INC_PATH) -I. -I$(GOOGLEAPIS_DIR) --plugin=$(GATEWAY_PLUGIN) --grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. $(EXAMPLES_BRAC)
 	# $(EXAMPLES_GRPC)
 	# /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto	
-EXAMPLES_REWRITE_POLICY=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite.proto
+EXAMPLES_REWRITE_POLICY=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/proto/rewrite/rewrite.proto
 REWRITE_DIR=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy
 GOPATH_DIR=$(GOPATH)/src
 REVERSEPROXY_DIR=gitlab.iyorhe.com/wfgz/reverseproxy
@@ -180,5 +200,30 @@ test_rewrite: $(GATEWAY_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
 	--plugin=$(GATEWAY_PLUGIN) \
 	--grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(REWRITE_DIR)/. \
 	$(EXAMPLES_REWRITE_POLICY)
-
+test_redux: $(REDUX_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
+	# protoc -I/usr/local/include -I. \
+	# -I$(GOPATH_DIR) \
+	# -I$(GOOGLEAPIS_DIR) \
+	# -I$(REWRITE_DIR) \
+	# --go_out=plugins=grpc:$(REWRITE_DIR)/. \
+	# $(EXAMPLES_REWRITE_POLICY)
+	
+	# protoc -I $(PROTOC_INC_PATH) \
+	# -I$(GOPATH_DIR) \
+	# -I. \
+	# -I$(GOOGLEAPIS_DIR) \
+	# -I$(REWRITE_DIR) \
+	# --plugin=$(REDUX_PLUGIN) \
+	# --react-redux_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. \
+	# $(EXAMPLES_REWRITE_POLICY)
+	protoc -I $(PROTOC_INC_PATH) \
+	-I$(GOPATH_DIR) \
+	-I. \
+	-I$(GOOGLEAPIS_DIR) \
+	-I$(REWRITE_DIR) \
+	--plugin=$(REDUX_PLUGIN) \
+	--react-redux_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. \
+	--js_out=import_style=browser,binary:$(OUTPUT_DIR)/. $(EXAMPLES_REWRITE_POLICY)
+	# mkdir /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/public/policy-react-app/src/proto/ -p
+	# cp -R $(OUTPUT_DIR)/proto/rewrite/*.* /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/public/policy-react-app/src/proto/
 .PHONY: generate examples test_rewrite test1 test lint clean distclean realclean 
