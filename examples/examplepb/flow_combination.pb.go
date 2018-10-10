@@ -18,24 +18,74 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+
 type EmptyProto struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *EmptyProto) Reset()                    { *m = EmptyProto{} }
-func (m *EmptyProto) String() string            { return proto.CompactTextString(m) }
-func (*EmptyProto) ProtoMessage()               {}
-func (*EmptyProto) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
+func (m *EmptyProto) Reset()         { *m = EmptyProto{} }
+func (m *EmptyProto) String() string { return proto.CompactTextString(m) }
+func (*EmptyProto) ProtoMessage()    {}
+func (*EmptyProto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_flow_combination_c36651e9e4003360, []int{0}
+}
+func (m *EmptyProto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EmptyProto.Unmarshal(m, b)
+}
+func (m *EmptyProto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EmptyProto.Marshal(b, m, deterministic)
+}
+func (dst *EmptyProto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EmptyProto.Merge(dst, src)
+}
+func (m *EmptyProto) XXX_Size() int {
+	return xxx_messageInfo_EmptyProto.Size(m)
+}
+func (m *EmptyProto) XXX_DiscardUnknown() {
+	xxx_messageInfo_EmptyProto.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EmptyProto proto.InternalMessageInfo
 
 type NonEmptyProto struct {
-	A string `protobuf:"bytes,1,opt,name=a" json:"a,omitempty"`
-	B string `protobuf:"bytes,2,opt,name=b" json:"b,omitempty"`
-	C string `protobuf:"bytes,3,opt,name=c" json:"c,omitempty"`
+	A                    string   `protobuf:"bytes,1,opt,name=a,proto3" json:"a,omitempty"`
+	B                    string   `protobuf:"bytes,2,opt,name=b,proto3" json:"b,omitempty"`
+	C                    string   `protobuf:"bytes,3,opt,name=c,proto3" json:"c,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *NonEmptyProto) Reset()                    { *m = NonEmptyProto{} }
-func (m *NonEmptyProto) String() string            { return proto.CompactTextString(m) }
-func (*NonEmptyProto) ProtoMessage()               {}
-func (*NonEmptyProto) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
+func (m *NonEmptyProto) Reset()         { *m = NonEmptyProto{} }
+func (m *NonEmptyProto) String() string { return proto.CompactTextString(m) }
+func (*NonEmptyProto) ProtoMessage()    {}
+func (*NonEmptyProto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_flow_combination_c36651e9e4003360, []int{1}
+}
+func (m *NonEmptyProto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NonEmptyProto.Unmarshal(m, b)
+}
+func (m *NonEmptyProto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NonEmptyProto.Marshal(b, m, deterministic)
+}
+func (dst *NonEmptyProto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NonEmptyProto.Merge(dst, src)
+}
+func (m *NonEmptyProto) XXX_Size() int {
+	return xxx_messageInfo_NonEmptyProto.Size(m)
+}
+func (m *NonEmptyProto) XXX_DiscardUnknown() {
+	xxx_messageInfo_NonEmptyProto.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NonEmptyProto proto.InternalMessageInfo
 
 func (m *NonEmptyProto) GetA() string {
 	if m != nil {
@@ -59,13 +109,35 @@ func (m *NonEmptyProto) GetC() string {
 }
 
 type UnaryProto struct {
-	Str string `protobuf:"bytes,1,opt,name=str" json:"str,omitempty"`
+	Str                  string   `protobuf:"bytes,1,opt,name=str,proto3" json:"str,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *UnaryProto) Reset()                    { *m = UnaryProto{} }
-func (m *UnaryProto) String() string            { return proto.CompactTextString(m) }
-func (*UnaryProto) ProtoMessage()               {}
-func (*UnaryProto) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
+func (m *UnaryProto) Reset()         { *m = UnaryProto{} }
+func (m *UnaryProto) String() string { return proto.CompactTextString(m) }
+func (*UnaryProto) ProtoMessage()    {}
+func (*UnaryProto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_flow_combination_c36651e9e4003360, []int{2}
+}
+func (m *UnaryProto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnaryProto.Unmarshal(m, b)
+}
+func (m *UnaryProto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnaryProto.Marshal(b, m, deterministic)
+}
+func (dst *UnaryProto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnaryProto.Merge(dst, src)
+}
+func (m *UnaryProto) XXX_Size() int {
+	return xxx_messageInfo_UnaryProto.Size(m)
+}
+func (m *UnaryProto) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnaryProto.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnaryProto proto.InternalMessageInfo
 
 func (m *UnaryProto) GetStr() string {
 	if m != nil {
@@ -75,15 +147,37 @@ func (m *UnaryProto) GetStr() string {
 }
 
 type NestedProto struct {
-	A *UnaryProto `protobuf:"bytes,1,opt,name=a" json:"a,omitempty"`
-	B string      `protobuf:"bytes,2,opt,name=b" json:"b,omitempty"`
-	C string      `protobuf:"bytes,3,opt,name=c" json:"c,omitempty"`
+	A                    *UnaryProto `protobuf:"bytes,1,opt,name=a,proto3" json:"a,omitempty"`
+	B                    string      `protobuf:"bytes,2,opt,name=b,proto3" json:"b,omitempty"`
+	C                    string      `protobuf:"bytes,3,opt,name=c,proto3" json:"c,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *NestedProto) Reset()                    { *m = NestedProto{} }
-func (m *NestedProto) String() string            { return proto.CompactTextString(m) }
-func (*NestedProto) ProtoMessage()               {}
-func (*NestedProto) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
+func (m *NestedProto) Reset()         { *m = NestedProto{} }
+func (m *NestedProto) String() string { return proto.CompactTextString(m) }
+func (*NestedProto) ProtoMessage()    {}
+func (*NestedProto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_flow_combination_c36651e9e4003360, []int{3}
+}
+func (m *NestedProto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NestedProto.Unmarshal(m, b)
+}
+func (m *NestedProto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NestedProto.Marshal(b, m, deterministic)
+}
+func (dst *NestedProto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NestedProto.Merge(dst, src)
+}
+func (m *NestedProto) XXX_Size() int {
+	return xxx_messageInfo_NestedProto.Size(m)
+}
+func (m *NestedProto) XXX_DiscardUnknown() {
+	xxx_messageInfo_NestedProto.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NestedProto proto.InternalMessageInfo
 
 func (m *NestedProto) GetA() *UnaryProto {
 	if m != nil {
@@ -107,13 +201,35 @@ func (m *NestedProto) GetC() string {
 }
 
 type SingleNestedProto struct {
-	A *UnaryProto `protobuf:"bytes,1,opt,name=a" json:"a,omitempty"`
+	A                    *UnaryProto `protobuf:"bytes,1,opt,name=a,proto3" json:"a,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *SingleNestedProto) Reset()                    { *m = SingleNestedProto{} }
-func (m *SingleNestedProto) String() string            { return proto.CompactTextString(m) }
-func (*SingleNestedProto) ProtoMessage()               {}
-func (*SingleNestedProto) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{4} }
+func (m *SingleNestedProto) Reset()         { *m = SingleNestedProto{} }
+func (m *SingleNestedProto) String() string { return proto.CompactTextString(m) }
+func (*SingleNestedProto) ProtoMessage()    {}
+func (*SingleNestedProto) Descriptor() ([]byte, []int) {
+	return fileDescriptor_flow_combination_c36651e9e4003360, []int{4}
+}
+func (m *SingleNestedProto) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SingleNestedProto.Unmarshal(m, b)
+}
+func (m *SingleNestedProto) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SingleNestedProto.Marshal(b, m, deterministic)
+}
+func (dst *SingleNestedProto) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SingleNestedProto.Merge(dst, src)
+}
+func (m *SingleNestedProto) XXX_Size() int {
+	return xxx_messageInfo_SingleNestedProto.Size(m)
+}
+func (m *SingleNestedProto) XXX_DiscardUnknown() {
+	xxx_messageInfo_SingleNestedProto.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SingleNestedProto proto.InternalMessageInfo
 
 func (m *SingleNestedProto) GetA() *UnaryProto {
 	if m != nil {
@@ -138,8 +254,9 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for FlowCombination service
-
+// FlowCombinationClient is the client API for FlowCombination service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FlowCombinationClient interface {
 	RpcEmptyRpc(ctx context.Context, in *EmptyProto, opts ...grpc.CallOption) (*EmptyProto, error)
 	RpcEmptyStream(ctx context.Context, in *EmptyProto, opts ...grpc.CallOption) (FlowCombination_RpcEmptyStreamClient, error)
@@ -163,7 +280,7 @@ func NewFlowCombinationClient(cc *grpc.ClientConn) FlowCombinationClient {
 
 func (c *flowCombinationClient) RpcEmptyRpc(ctx context.Context, in *EmptyProto, opts ...grpc.CallOption) (*EmptyProto, error) {
 	out := new(EmptyProto)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcEmptyRpc", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcEmptyRpc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +288,7 @@ func (c *flowCombinationClient) RpcEmptyRpc(ctx context.Context, in *EmptyProto,
 }
 
 func (c *flowCombinationClient) RpcEmptyStream(ctx context.Context, in *EmptyProto, opts ...grpc.CallOption) (FlowCombination_RpcEmptyStreamClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[0], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/RpcEmptyStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[0], "/grpc.gateway.examples.examplepb.FlowCombination/RpcEmptyStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +320,7 @@ func (x *flowCombinationRpcEmptyStreamClient) Recv() (*EmptyProto, error) {
 }
 
 func (c *flowCombinationClient) StreamEmptyRpc(ctx context.Context, opts ...grpc.CallOption) (FlowCombination_StreamEmptyRpcClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[1], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/StreamEmptyRpc", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[1], "/grpc.gateway.examples.examplepb.FlowCombination/StreamEmptyRpc", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +354,7 @@ func (x *flowCombinationStreamEmptyRpcClient) CloseAndRecv() (*EmptyProto, error
 }
 
 func (c *flowCombinationClient) StreamEmptyStream(ctx context.Context, opts ...grpc.CallOption) (FlowCombination_StreamEmptyStreamClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[2], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/StreamEmptyStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[2], "/grpc.gateway.examples.examplepb.FlowCombination/StreamEmptyStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +386,7 @@ func (x *flowCombinationStreamEmptyStreamClient) Recv() (*EmptyProto, error) {
 
 func (c *flowCombinationClient) RpcBodyRpc(ctx context.Context, in *NonEmptyProto, opts ...grpc.CallOption) (*EmptyProto, error) {
 	out := new(EmptyProto)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcBodyRpc", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcBodyRpc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +395,7 @@ func (c *flowCombinationClient) RpcBodyRpc(ctx context.Context, in *NonEmptyProt
 
 func (c *flowCombinationClient) RpcPathSingleNestedRpc(ctx context.Context, in *SingleNestedProto, opts ...grpc.CallOption) (*EmptyProto, error) {
 	out := new(EmptyProto)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathSingleNestedRpc", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathSingleNestedRpc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +404,7 @@ func (c *flowCombinationClient) RpcPathSingleNestedRpc(ctx context.Context, in *
 
 func (c *flowCombinationClient) RpcPathNestedRpc(ctx context.Context, in *NestedProto, opts ...grpc.CallOption) (*EmptyProto, error) {
 	out := new(EmptyProto)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathNestedRpc", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathNestedRpc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -295,7 +412,7 @@ func (c *flowCombinationClient) RpcPathNestedRpc(ctx context.Context, in *Nested
 }
 
 func (c *flowCombinationClient) RpcBodyStream(ctx context.Context, in *NonEmptyProto, opts ...grpc.CallOption) (FlowCombination_RpcBodyStreamClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[3], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/RpcBodyStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[3], "/grpc.gateway.examples.examplepb.FlowCombination/RpcBodyStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +444,7 @@ func (x *flowCombinationRpcBodyStreamClient) Recv() (*EmptyProto, error) {
 }
 
 func (c *flowCombinationClient) RpcPathSingleNestedStream(ctx context.Context, in *SingleNestedProto, opts ...grpc.CallOption) (FlowCombination_RpcPathSingleNestedStreamClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[4], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathSingleNestedStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[4], "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathSingleNestedStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -359,7 +476,7 @@ func (x *flowCombinationRpcPathSingleNestedStreamClient) Recv() (*EmptyProto, er
 }
 
 func (c *flowCombinationClient) RpcPathNestedStream(ctx context.Context, in *NestedProto, opts ...grpc.CallOption) (FlowCombination_RpcPathNestedStreamClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_FlowCombination_serviceDesc.Streams[5], c.cc, "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathNestedStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &_FlowCombination_serviceDesc.Streams[5], "/grpc.gateway.examples.examplepb.FlowCombination/RpcPathNestedStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -390,8 +507,7 @@ func (x *flowCombinationRpcPathNestedStreamClient) Recv() (*EmptyProto, error) {
 	return m, nil
 }
 
-// Server API for FlowCombination service
-
+// FlowCombinationServer is the server API for FlowCombination service.
 type FlowCombinationServer interface {
 	RpcEmptyRpc(context.Context, *EmptyProto) (*EmptyProto, error)
 	RpcEmptyStream(*EmptyProto, FlowCombination_RpcEmptyStreamServer) error
@@ -674,9 +790,11 @@ var _FlowCombination_serviceDesc = grpc.ServiceDesc{
 	Metadata: "examples/examplepb/flow_combination.proto",
 }
 
-func init() { proto.RegisterFile("examples/examplepb/flow_combination.proto", fileDescriptor3) }
+func init() {
+	proto.RegisterFile("examples/examplepb/flow_combination.proto", fileDescriptor_flow_combination_c36651e9e4003360)
+}
 
-var fileDescriptor3 = []byte{
+var fileDescriptor_flow_combination_c36651e9e4003360 = []byte{
 	// 656 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x96, 0x3f, 0x8f, 0x12, 0x4f,
 	0x18, 0xc7, 0xf3, 0x70, 0xc9, 0x2f, 0xb9, 0xe1, 0xfe, 0x70, 0xcb, 0x2f, 0x08, 0x1c, 0x1e, 0x77,

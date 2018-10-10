@@ -11,12 +11,16 @@ package examplepb
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/grpc-ecosystem/grpc-gateway/examples/sub"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/utilities"
+	"github.com/ory/hydra/sdk/go/hydra"
+	"github.com/ory/hydra/sdk/go/hydra/swagger"
+	"github.com/yourhe/grpc-gateway/examples/sub"
+	"github.com/yourhe/grpc-gateway/policy"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -29,6 +33,7 @@ var _ io.Reader
 var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
+var HydraClient hydra.SDK
 
 func request_StreamService_BulkCreate_0(ctx context.Context, marshaler runtime.Marshaler, client StreamServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var metadata runtime.ServerMetadata
@@ -144,46 +149,47 @@ var (
 	headerAuthorize = "authorization"
 )
 
-// func exampleAuthFunc(w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
-func exampleAuthFunc(fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-
+// func exampleAuthFunc(rule *policy.PolicyRule, w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
+func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		fn(w, req, pathParams)
+		return
 		val := req.Header.Get(headerAuthorize)
+		var expectedScheme = "bearer"
 		if val == "" {
 			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
 			// runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with v:"+val, http.StatusUnauthorized)
 			return
 
 		}
 		splits := strings.SplitN(val, " ", 2)
 		if len(splits) < 2 {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Bad authorization string", http.StatusUnauthorized)
 
 			// return "", grpc.Errorf(codes.Unauthenticated, "Bad authorization string")
 			return
 		}
 		if strings.ToLower(splits[0]) != strings.ToLower(expectedScheme) {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with ", http.StatusUnauthorized)
 			return
 			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
 		}
 		token := splits[1]
-		if err != nil {
-			return nil, err
-		}
-		Accesstoken, _, err := hydraClinet.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
-			Action:   "write",
-			Resource: "rewrite:YourService:Echo",
+		Accesstoken, _, err := HydraClient.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
+			Action:   rule.Action,
+			Resource: rule.Resources,
 			Token:    token,
 		})
 		if err != nil {
-			return nil, err
-		}
-		if Accesstoken.Allowed != true {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, err.Error(), http.StatusUnauthorized)
 			return
 		}
+		if Accesstoken.Allowed != true {
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with not Allowed", http.StatusUnauthorized)
+			return
+		}
+		fn(w, req, pathParams)
 	}
 }
 
@@ -226,6 +232,7 @@ func RegisterStreamServiceHandler(ctx context.Context, mux *runtime.ServeMux, co
 func RegisterStreamServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client StreamServiceClient) error {
 
 	mux.Handle("POST", pattern_StreamService_BulkCreate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -256,6 +263,7 @@ func RegisterStreamServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 	})
 
 	mux.Handle("GET", pattern_StreamService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -286,6 +294,7 @@ func RegisterStreamServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 	})
 
 	mux.Handle("POST", pattern_StreamService_BulkEcho_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -332,4 +341,38 @@ var (
 	forward_StreamService_List_0 = runtime.ForwardResponseStream
 
 	forward_StreamService_BulkEcho_0 = runtime.ForwardResponseStream
+)
+
+// type RequestPolicyMap map[string]*policy.PolicyRule
+type RequestPolicyMap struct {
+	PolicyMap   map[string]*policy.PolicyRule
+	PatternList []ServiceMothedMap
+}
+type ServiceMothedMap struct {
+	Name    string
+	Pattern *runtime.Pattern
+}
+
+var (
+	RPM = RequestPolicyMap{
+		PolicyMap: map[string]*policy.PolicyRule{},
+		// PatternList => []ServiceMothedMap
+		PatternList: []ServiceMothedMap{
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/bulk",
+				Pattern: &pattern_StreamService_BulkCreate_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything",
+				Pattern: &pattern_StreamService_List_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/echo",
+				Pattern: &pattern_StreamService_BulkEcho_0,
+			},
+		},
+	}
 )

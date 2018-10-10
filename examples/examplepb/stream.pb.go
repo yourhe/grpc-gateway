@@ -6,9 +6,9 @@ package examplepb
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
+import empty "github.com/golang/protobuf/ptypes/empty"
+import sub "github.com/yourhe/grpc-gateway/examples/sub"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
-import google_protobuf1 "github.com/golang/protobuf/ptypes/empty"
-import grpc_gateway_examples_sub "github.com/grpc-ecosystem/grpc-gateway/examples/sub"
 
 import (
 	context "golang.org/x/net/context"
@@ -20,6 +20,12 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
@@ -28,11 +34,12 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for StreamService service
-
+// StreamServiceClient is the client API for StreamService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type StreamServiceClient interface {
 	BulkCreate(ctx context.Context, opts ...grpc.CallOption) (StreamService_BulkCreateClient, error)
-	List(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (StreamService_ListClient, error)
+	List(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (StreamService_ListClient, error)
 	BulkEcho(ctx context.Context, opts ...grpc.CallOption) (StreamService_BulkEchoClient, error)
 }
 
@@ -45,7 +52,7 @@ func NewStreamServiceClient(cc *grpc.ClientConn) StreamServiceClient {
 }
 
 func (c *streamServiceClient) BulkCreate(ctx context.Context, opts ...grpc.CallOption) (StreamService_BulkCreateClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_StreamService_serviceDesc.Streams[0], c.cc, "/grpc.gateway.examples.examplepb.StreamService/BulkCreate", opts...)
+	stream, err := c.cc.NewStream(ctx, &_StreamService_serviceDesc.Streams[0], "/grpc.gateway.examples.examplepb.StreamService/BulkCreate", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +62,7 @@ func (c *streamServiceClient) BulkCreate(ctx context.Context, opts ...grpc.CallO
 
 type StreamService_BulkCreateClient interface {
 	Send(*ABitOfEverything) error
-	CloseAndRecv() (*google_protobuf1.Empty, error)
+	CloseAndRecv() (*empty.Empty, error)
 	grpc.ClientStream
 }
 
@@ -67,19 +74,19 @@ func (x *streamServiceBulkCreateClient) Send(m *ABitOfEverything) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *streamServiceBulkCreateClient) CloseAndRecv() (*google_protobuf1.Empty, error) {
+func (x *streamServiceBulkCreateClient) CloseAndRecv() (*empty.Empty, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(google_protobuf1.Empty)
+	m := new(empty.Empty)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *streamServiceClient) List(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (StreamService_ListClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_StreamService_serviceDesc.Streams[1], c.cc, "/grpc.gateway.examples.examplepb.StreamService/List", opts...)
+func (c *streamServiceClient) List(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (StreamService_ListClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_StreamService_serviceDesc.Streams[1], "/grpc.gateway.examples.examplepb.StreamService/List", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +118,7 @@ func (x *streamServiceListClient) Recv() (*ABitOfEverything, error) {
 }
 
 func (c *streamServiceClient) BulkEcho(ctx context.Context, opts ...grpc.CallOption) (StreamService_BulkEchoClient, error) {
-	stream, err := grpc.NewClientStream(ctx, &_StreamService_serviceDesc.Streams[2], c.cc, "/grpc.gateway.examples.examplepb.StreamService/BulkEcho", opts...)
+	stream, err := c.cc.NewStream(ctx, &_StreamService_serviceDesc.Streams[2], "/grpc.gateway.examples.examplepb.StreamService/BulkEcho", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -120,8 +127,8 @@ func (c *streamServiceClient) BulkEcho(ctx context.Context, opts ...grpc.CallOpt
 }
 
 type StreamService_BulkEchoClient interface {
-	Send(*grpc_gateway_examples_sub.StringMessage) error
-	Recv() (*grpc_gateway_examples_sub.StringMessage, error)
+	Send(*sub.StringMessage) error
+	Recv() (*sub.StringMessage, error)
 	grpc.ClientStream
 }
 
@@ -129,23 +136,22 @@ type streamServiceBulkEchoClient struct {
 	grpc.ClientStream
 }
 
-func (x *streamServiceBulkEchoClient) Send(m *grpc_gateway_examples_sub.StringMessage) error {
+func (x *streamServiceBulkEchoClient) Send(m *sub.StringMessage) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *streamServiceBulkEchoClient) Recv() (*grpc_gateway_examples_sub.StringMessage, error) {
-	m := new(grpc_gateway_examples_sub.StringMessage)
+func (x *streamServiceBulkEchoClient) Recv() (*sub.StringMessage, error) {
+	m := new(sub.StringMessage)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// Server API for StreamService service
-
+// StreamServiceServer is the server API for StreamService service.
 type StreamServiceServer interface {
 	BulkCreate(StreamService_BulkCreateServer) error
-	List(*google_protobuf1.Empty, StreamService_ListServer) error
+	List(*empty.Empty, StreamService_ListServer) error
 	BulkEcho(StreamService_BulkEchoServer) error
 }
 
@@ -158,7 +164,7 @@ func _StreamService_BulkCreate_Handler(srv interface{}, stream grpc.ServerStream
 }
 
 type StreamService_BulkCreateServer interface {
-	SendAndClose(*google_protobuf1.Empty) error
+	SendAndClose(*empty.Empty) error
 	Recv() (*ABitOfEverything, error)
 	grpc.ServerStream
 }
@@ -167,7 +173,7 @@ type streamServiceBulkCreateServer struct {
 	grpc.ServerStream
 }
 
-func (x *streamServiceBulkCreateServer) SendAndClose(m *google_protobuf1.Empty) error {
+func (x *streamServiceBulkCreateServer) SendAndClose(m *empty.Empty) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -180,7 +186,7 @@ func (x *streamServiceBulkCreateServer) Recv() (*ABitOfEverything, error) {
 }
 
 func _StreamService_List_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(google_protobuf1.Empty)
+	m := new(empty.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -205,8 +211,8 @@ func _StreamService_BulkEcho_Handler(srv interface{}, stream grpc.ServerStream) 
 }
 
 type StreamService_BulkEchoServer interface {
-	Send(*grpc_gateway_examples_sub.StringMessage) error
-	Recv() (*grpc_gateway_examples_sub.StringMessage, error)
+	Send(*sub.StringMessage) error
+	Recv() (*sub.StringMessage, error)
 	grpc.ServerStream
 }
 
@@ -214,12 +220,12 @@ type streamServiceBulkEchoServer struct {
 	grpc.ServerStream
 }
 
-func (x *streamServiceBulkEchoServer) Send(m *grpc_gateway_examples_sub.StringMessage) error {
+func (x *streamServiceBulkEchoServer) Send(m *sub.StringMessage) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *streamServiceBulkEchoServer) Recv() (*grpc_gateway_examples_sub.StringMessage, error) {
-	m := new(grpc_gateway_examples_sub.StringMessage)
+func (x *streamServiceBulkEchoServer) Recv() (*sub.StringMessage, error) {
+	m := new(sub.StringMessage)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -251,9 +257,11 @@ var _StreamService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "examples/examplepb/stream.proto",
 }
 
-func init() { proto.RegisterFile("examples/examplepb/stream.proto", fileDescriptor2) }
+func init() {
+	proto.RegisterFile("examples/examplepb/stream.proto", fileDescriptor_stream_9548a5b68564c99a)
+}
 
-var fileDescriptor2 = []byte{
+var fileDescriptor_stream_9548a5b68564c99a = []byte{
 	// 314 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x90, 0xbf, 0x4a, 0x43, 0x31,
 	0x14, 0xc6, 0xb9, 0x2a, 0xa2, 0x11, 0x97, 0x0c, 0x0e, 0x51, 0x28, 0x16, 0xc1, 0x2a, 0x92, 0xb4,

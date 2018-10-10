@@ -6,13 +6,13 @@ package examplepb
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import _ "google.golang.org/genproto/googleapis/api/annotations"
-import google_protobuf1 "github.com/golang/protobuf/ptypes/empty"
-import google_protobuf2 "github.com/golang/protobuf/ptypes/duration"
-import grpc_gateway_examples_sub "github.com/grpc-ecosystem/grpc-gateway/examples/sub"
-import sub2 "github.com/grpc-ecosystem/grpc-gateway/examples/sub2"
-import google_protobuf3 "github.com/golang/protobuf/ptypes/timestamp"
+import duration "github.com/golang/protobuf/ptypes/duration"
+import empty "github.com/golang/protobuf/ptypes/empty"
+import timestamp "github.com/golang/protobuf/ptypes/timestamp"
 import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
+import sub "github.com/yourhe/grpc-gateway/examples/sub"
+import sub2 "github.com/yourhe/grpc-gateway/examples/sub2"
+import _ "google.golang.org/genproto/googleapis/api/annotations"
 
 import (
 	context "golang.org/x/net/context"
@@ -23,6 +23,12 @@ import (
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 // NumericEnum is one or zero.
 type NumericEnum int32
@@ -46,7 +52,9 @@ var NumericEnum_value = map[string]int32{
 func (x NumericEnum) String() string {
 	return proto.EnumName(NumericEnum_name, int32(x))
 }
-func (NumericEnum) EnumDescriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (NumericEnum) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3, []int{0}
+}
 
 // DeepEnum is one or zero.
 type ABitOfEverything_Nested_DeepEnum int32
@@ -71,59 +79,81 @@ func (x ABitOfEverything_Nested_DeepEnum) String() string {
 	return proto.EnumName(ABitOfEverything_Nested_DeepEnum_name, int32(x))
 }
 func (ABitOfEverything_Nested_DeepEnum) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor1, []int{0, 0, 0}
+	return fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3, []int{0, 0, 0}
 }
 
 // Intentionaly complicated message type to cover much features of Protobuf.
 // NEXT ID: 27
 type ABitOfEverything struct {
-	SingleNested *ABitOfEverything_Nested   `protobuf:"bytes,25,opt,name=single_nested,json=singleNested" json:"single_nested,omitempty"`
-	Uuid         string                     `protobuf:"bytes,1,opt,name=uuid" json:"uuid,omitempty"`
-	Nested       []*ABitOfEverything_Nested `protobuf:"bytes,2,rep,name=nested" json:"nested,omitempty"`
-	FloatValue   float32                    `protobuf:"fixed32,3,opt,name=float_value,json=floatValue" json:"float_value,omitempty"`
-	DoubleValue  float64                    `protobuf:"fixed64,4,opt,name=double_value,json=doubleValue" json:"double_value,omitempty"`
-	Int64Value   int64                      `protobuf:"varint,5,opt,name=int64_value,json=int64Value" json:"int64_value,omitempty"`
-	Uint64Value  uint64                     `protobuf:"varint,6,opt,name=uint64_value,json=uint64Value" json:"uint64_value,omitempty"`
-	Int32Value   int32                      `protobuf:"varint,7,opt,name=int32_value,json=int32Value" json:"int32_value,omitempty"`
-	Fixed64Value uint64                     `protobuf:"fixed64,8,opt,name=fixed64_value,json=fixed64Value" json:"fixed64_value,omitempty"`
-	Fixed32Value uint32                     `protobuf:"fixed32,9,opt,name=fixed32_value,json=fixed32Value" json:"fixed32_value,omitempty"`
-	BoolValue    bool                       `protobuf:"varint,10,opt,name=bool_value,json=boolValue" json:"bool_value,omitempty"`
-	StringValue  string                     `protobuf:"bytes,11,opt,name=string_value,json=stringValue" json:"string_value,omitempty"`
+	SingleNested *ABitOfEverything_Nested   `protobuf:"bytes,25,opt,name=single_nested,json=singleNested,proto3" json:"single_nested,omitempty"`
+	Uuid         string                     `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Nested       []*ABitOfEverything_Nested `protobuf:"bytes,2,rep,name=nested,proto3" json:"nested,omitempty"`
+	FloatValue   float32                    `protobuf:"fixed32,3,opt,name=float_value,json=floatValue,proto3" json:"float_value,omitempty"`
+	DoubleValue  float64                    `protobuf:"fixed64,4,opt,name=double_value,json=doubleValue,proto3" json:"double_value,omitempty"`
+	Int64Value   int64                      `protobuf:"varint,5,opt,name=int64_value,json=int64Value,proto3" json:"int64_value,omitempty"`
+	Uint64Value  uint64                     `protobuf:"varint,6,opt,name=uint64_value,json=uint64Value,proto3" json:"uint64_value,omitempty"`
+	Int32Value   int32                      `protobuf:"varint,7,opt,name=int32_value,json=int32Value,proto3" json:"int32_value,omitempty"`
+	Fixed64Value uint64                     `protobuf:"fixed64,8,opt,name=fixed64_value,json=fixed64Value,proto3" json:"fixed64_value,omitempty"`
+	Fixed32Value uint32                     `protobuf:"fixed32,9,opt,name=fixed32_value,json=fixed32Value,proto3" json:"fixed32_value,omitempty"`
+	BoolValue    bool                       `protobuf:"varint,10,opt,name=bool_value,json=boolValue,proto3" json:"bool_value,omitempty"`
+	StringValue  string                     `protobuf:"bytes,11,opt,name=string_value,json=stringValue,proto3" json:"string_value,omitempty"`
 	// TODO(yugui) add bytes_value
-	Uint32Value         uint32      `protobuf:"varint,13,opt,name=uint32_value,json=uint32Value" json:"uint32_value,omitempty"`
-	EnumValue           NumericEnum `protobuf:"varint,14,opt,name=enum_value,json=enumValue,enum=grpc.gateway.examples.examplepb.NumericEnum" json:"enum_value,omitempty"`
-	Sfixed32Value       int32       `protobuf:"fixed32,15,opt,name=sfixed32_value,json=sfixed32Value" json:"sfixed32_value,omitempty"`
-	Sfixed64Value       int64       `protobuf:"fixed64,16,opt,name=sfixed64_value,json=sfixed64Value" json:"sfixed64_value,omitempty"`
-	Sint32Value         int32       `protobuf:"zigzag32,17,opt,name=sint32_value,json=sint32Value" json:"sint32_value,omitempty"`
-	Sint64Value         int64       `protobuf:"zigzag64,18,opt,name=sint64_value,json=sint64Value" json:"sint64_value,omitempty"`
-	RepeatedStringValue []string    `protobuf:"bytes,19,rep,name=repeated_string_value,json=repeatedStringValue" json:"repeated_string_value,omitempty"`
+	Uint32Value         uint32      `protobuf:"varint,13,opt,name=uint32_value,json=uint32Value,proto3" json:"uint32_value,omitempty"`
+	EnumValue           NumericEnum `protobuf:"varint,14,opt,name=enum_value,json=enumValue,proto3,enum=grpc.gateway.examples.examplepb.NumericEnum" json:"enum_value,omitempty"`
+	Sfixed32Value       int32       `protobuf:"fixed32,15,opt,name=sfixed32_value,json=sfixed32Value,proto3" json:"sfixed32_value,omitempty"`
+	Sfixed64Value       int64       `protobuf:"fixed64,16,opt,name=sfixed64_value,json=sfixed64Value,proto3" json:"sfixed64_value,omitempty"`
+	Sint32Value         int32       `protobuf:"zigzag32,17,opt,name=sint32_value,json=sint32Value,proto3" json:"sint32_value,omitempty"`
+	Sint64Value         int64       `protobuf:"zigzag64,18,opt,name=sint64_value,json=sint64Value,proto3" json:"sint64_value,omitempty"`
+	RepeatedStringValue []string    `protobuf:"bytes,19,rep,name=repeated_string_value,json=repeatedStringValue,proto3" json:"repeated_string_value,omitempty"`
 	// Types that are valid to be assigned to OneofValue:
 	//	*ABitOfEverything_OneofEmpty
 	//	*ABitOfEverything_OneofString
 	OneofValue               isABitOfEverything_OneofValue       `protobuf_oneof:"oneof_value"`
-	MapValue                 map[string]NumericEnum              `protobuf:"bytes,22,rep,name=map_value,json=mapValue" json:"map_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value,enum=grpc.gateway.examples.examplepb.NumericEnum"`
-	MappedStringValue        map[string]string                   `protobuf:"bytes,23,rep,name=mapped_string_value,json=mappedStringValue" json:"mapped_string_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	MappedNestedValue        map[string]*ABitOfEverything_Nested `protobuf:"bytes,24,rep,name=mapped_nested_value,json=mappedNestedValue" json:"mapped_nested_value,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	NonConventionalNameValue string                              `protobuf:"bytes,26,opt,name=nonConventionalNameValue" json:"nonConventionalNameValue,omitempty"`
-	TimestampValue           *google_protobuf3.Timestamp         `protobuf:"bytes,27,opt,name=timestamp_value,json=timestampValue" json:"timestamp_value,omitempty"`
+	MapValue                 map[string]NumericEnum              `protobuf:"bytes,22,rep,name=map_value,json=mapValue,proto3" json:"map_value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3,enum=grpc.gateway.examples.examplepb.NumericEnum"`
+	MappedStringValue        map[string]string                   `protobuf:"bytes,23,rep,name=mapped_string_value,json=mappedStringValue,proto3" json:"mapped_string_value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	MappedNestedValue        map[string]*ABitOfEverything_Nested `protobuf:"bytes,24,rep,name=mapped_nested_value,json=mappedNestedValue,proto3" json:"mapped_nested_value,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	NonConventionalNameValue string                              `protobuf:"bytes,26,opt,name=nonConventionalNameValue,proto3" json:"nonConventionalNameValue,omitempty"`
+	TimestampValue           *timestamp.Timestamp                `protobuf:"bytes,27,opt,name=timestamp_value,json=timestampValue,proto3" json:"timestamp_value,omitempty"`
 	// repeated enum value. it is comma-separated in query
-	RepeatedEnumValue []NumericEnum `protobuf:"varint,28,rep,packed,name=repeated_enum_value,json=repeatedEnumValue,enum=grpc.gateway.examples.examplepb.NumericEnum" json:"repeated_enum_value,omitempty"`
+	RepeatedEnumValue    []NumericEnum `protobuf:"varint,28,rep,packed,name=repeated_enum_value,json=repeatedEnumValue,proto3,enum=grpc.gateway.examples.examplepb.NumericEnum" json:"repeated_enum_value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
-func (m *ABitOfEverything) Reset()                    { *m = ABitOfEverything{} }
-func (m *ABitOfEverything) String() string            { return proto.CompactTextString(m) }
-func (*ABitOfEverything) ProtoMessage()               {}
-func (*ABitOfEverything) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (m *ABitOfEverything) Reset()         { *m = ABitOfEverything{} }
+func (m *ABitOfEverything) String() string { return proto.CompactTextString(m) }
+func (*ABitOfEverything) ProtoMessage()    {}
+func (*ABitOfEverything) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3, []int{0}
+}
+func (m *ABitOfEverything) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ABitOfEverything.Unmarshal(m, b)
+}
+func (m *ABitOfEverything) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ABitOfEverything.Marshal(b, m, deterministic)
+}
+func (dst *ABitOfEverything) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ABitOfEverything.Merge(dst, src)
+}
+func (m *ABitOfEverything) XXX_Size() int {
+	return xxx_messageInfo_ABitOfEverything.Size(m)
+}
+func (m *ABitOfEverything) XXX_DiscardUnknown() {
+	xxx_messageInfo_ABitOfEverything.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ABitOfEverything proto.InternalMessageInfo
 
 type isABitOfEverything_OneofValue interface {
 	isABitOfEverything_OneofValue()
 }
 
 type ABitOfEverything_OneofEmpty struct {
-	OneofEmpty *google_protobuf1.Empty `protobuf:"bytes,20,opt,name=oneof_empty,json=oneofEmpty,oneof"`
+	OneofEmpty *empty.Empty `protobuf:"bytes,20,opt,name=oneof_empty,json=oneofEmpty,proto3,oneof"`
 }
 type ABitOfEverything_OneofString struct {
-	OneofString string `protobuf:"bytes,21,opt,name=oneof_string,json=oneofString,oneof"`
+	OneofString string `protobuf:"bytes,21,opt,name=oneof_string,json=oneofString,proto3,oneof"`
 }
 
 func (*ABitOfEverything_OneofEmpty) isABitOfEverything_OneofValue()  {}
@@ -269,7 +299,7 @@ func (m *ABitOfEverything) GetRepeatedStringValue() []string {
 	return nil
 }
 
-func (m *ABitOfEverything) GetOneofEmpty() *google_protobuf1.Empty {
+func (m *ABitOfEverything) GetOneofEmpty() *empty.Empty {
 	if x, ok := m.GetOneofValue().(*ABitOfEverything_OneofEmpty); ok {
 		return x.OneofEmpty
 	}
@@ -311,7 +341,7 @@ func (m *ABitOfEverything) GetNonConventionalNameValue() string {
 	return ""
 }
 
-func (m *ABitOfEverything) GetTimestampValue() *google_protobuf3.Timestamp {
+func (m *ABitOfEverything) GetTimestampValue() *timestamp.Timestamp {
 	if m != nil {
 		return m.TimestampValue
 	}
@@ -359,7 +389,7 @@ func _ABitOfEverything_OneofUnmarshaler(msg proto.Message, tag, wire int, b *pro
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
-		msg := new(google_protobuf1.Empty)
+		msg := new(empty.Empty)
 		err := b.DecodeMessage(msg)
 		m.OneofValue = &ABitOfEverything_OneofEmpty{msg}
 		return true, err
@@ -381,11 +411,11 @@ func _ABitOfEverything_OneofSizer(msg proto.Message) (n int) {
 	switch x := m.OneofValue.(type) {
 	case *ABitOfEverything_OneofEmpty:
 		s := proto.Size(x.OneofEmpty)
-		n += proto.SizeVarint(20<<3 | proto.WireBytes)
+		n += 2 // tag and wire
 		n += proto.SizeVarint(uint64(s))
 		n += s
 	case *ABitOfEverything_OneofString:
-		n += proto.SizeVarint(21<<3 | proto.WireBytes)
+		n += 2 // tag and wire
 		n += proto.SizeVarint(uint64(len(x.OneofString)))
 		n += len(x.OneofString)
 	case nil:
@@ -398,15 +428,37 @@ func _ABitOfEverything_OneofSizer(msg proto.Message) (n int) {
 // Nested is nested type.
 type ABitOfEverything_Nested struct {
 	// name is nested field.
-	Name   string                           `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Amount uint32                           `protobuf:"varint,2,opt,name=amount" json:"amount,omitempty"`
-	Ok     ABitOfEverything_Nested_DeepEnum `protobuf:"varint,3,opt,name=ok,enum=grpc.gateway.examples.examplepb.ABitOfEverything_Nested_DeepEnum" json:"ok,omitempty"`
+	Name                 string                           `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Amount               uint32                           `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	Ok                   ABitOfEverything_Nested_DeepEnum `protobuf:"varint,3,opt,name=ok,proto3,enum=grpc.gateway.examples.examplepb.ABitOfEverything_Nested_DeepEnum" json:"ok,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                         `json:"-"`
+	XXX_unrecognized     []byte                           `json:"-"`
+	XXX_sizecache        int32                            `json:"-"`
 }
 
-func (m *ABitOfEverything_Nested) Reset()                    { *m = ABitOfEverything_Nested{} }
-func (m *ABitOfEverything_Nested) String() string            { return proto.CompactTextString(m) }
-func (*ABitOfEverything_Nested) ProtoMessage()               {}
-func (*ABitOfEverything_Nested) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0, 0} }
+func (m *ABitOfEverything_Nested) Reset()         { *m = ABitOfEverything_Nested{} }
+func (m *ABitOfEverything_Nested) String() string { return proto.CompactTextString(m) }
+func (*ABitOfEverything_Nested) ProtoMessage()    {}
+func (*ABitOfEverything_Nested) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3, []int{0, 0}
+}
+func (m *ABitOfEverything_Nested) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ABitOfEverything_Nested.Unmarshal(m, b)
+}
+func (m *ABitOfEverything_Nested) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ABitOfEverything_Nested.Marshal(b, m, deterministic)
+}
+func (dst *ABitOfEverything_Nested) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ABitOfEverything_Nested.Merge(dst, src)
+}
+func (m *ABitOfEverything_Nested) XXX_Size() int {
+	return xxx_messageInfo_ABitOfEverything_Nested.Size(m)
+}
+func (m *ABitOfEverything_Nested) XXX_DiscardUnknown() {
+	xxx_messageInfo_ABitOfEverything_Nested.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ABitOfEverything_Nested proto.InternalMessageInfo
 
 func (m *ABitOfEverything_Nested) GetName() string {
 	if m != nil {
@@ -431,6 +483,9 @@ func (m *ABitOfEverything_Nested) GetOk() ABitOfEverything_Nested_DeepEnum {
 
 func init() {
 	proto.RegisterType((*ABitOfEverything)(nil), "grpc.gateway.examples.examplepb.ABitOfEverything")
+	proto.RegisterMapType((map[string]NumericEnum)(nil), "grpc.gateway.examples.examplepb.ABitOfEverything.MapValueEntry")
+	proto.RegisterMapType((map[string]*ABitOfEverything_Nested)(nil), "grpc.gateway.examples.examplepb.ABitOfEverything.MappedNestedValueEntry")
+	proto.RegisterMapType((map[string]string)(nil), "grpc.gateway.examples.examplepb.ABitOfEverything.MappedStringValueEntry")
 	proto.RegisterType((*ABitOfEverything_Nested)(nil), "grpc.gateway.examples.examplepb.ABitOfEverything.Nested")
 	proto.RegisterEnum("grpc.gateway.examples.examplepb.NumericEnum", NumericEnum_name, NumericEnum_value)
 	proto.RegisterEnum("grpc.gateway.examples.examplepb.ABitOfEverything_Nested_DeepEnum", ABitOfEverything_Nested_DeepEnum_name, ABitOfEverything_Nested_DeepEnum_value)
@@ -444,15 +499,16 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for ABitOfEverythingService service
-
+// ABitOfEverythingServiceClient is the client API for ABitOfEverythingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ABitOfEverythingServiceClient interface {
 	Create(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error)
 	CreateBody(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error)
 	Lookup(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*ABitOfEverything, error)
-	Update(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
-	Delete(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
-	GetQuery(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	Update(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*empty.Empty, error)
+	Delete(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*empty.Empty, error)
+	GetQuery(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Echo allows posting a StringMessage value.
 	//
 	// It also exposes multiple bindings.
@@ -460,10 +516,10 @@ type ABitOfEverythingServiceClient interface {
 	// This makes it useful when validating that the OpenAPI v2 API
 	// description exposes documentation correctly on all paths
 	// defined as additional_bindings in the proto.
-	Echo(ctx context.Context, in *grpc_gateway_examples_sub.StringMessage, opts ...grpc.CallOption) (*grpc_gateway_examples_sub.StringMessage, error)
+	Echo(ctx context.Context, in *sub.StringMessage, opts ...grpc.CallOption) (*sub.StringMessage, error)
 	DeepPathEcho(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error)
-	NoBindings(ctx context.Context, in *google_protobuf2.Duration, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
-	Timeout(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	NoBindings(ctx context.Context, in *duration.Duration, opts ...grpc.CallOption) (*empty.Empty, error)
+	Timeout(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type aBitOfEverythingServiceClient struct {
@@ -476,7 +532,7 @@ func NewABitOfEverythingServiceClient(cc *grpc.ClientConn) ABitOfEverythingServi
 
 func (c *aBitOfEverythingServiceClient) Create(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error) {
 	out := new(ABitOfEverything)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Create", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -485,7 +541,7 @@ func (c *aBitOfEverythingServiceClient) Create(ctx context.Context, in *ABitOfEv
 
 func (c *aBitOfEverythingServiceClient) CreateBody(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error) {
 	out := new(ABitOfEverything)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/CreateBody", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/CreateBody", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -494,43 +550,43 @@ func (c *aBitOfEverythingServiceClient) CreateBody(ctx context.Context, in *ABit
 
 func (c *aBitOfEverythingServiceClient) Lookup(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*ABitOfEverything, error) {
 	out := new(ABitOfEverything)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Lookup", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Lookup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) Update(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Update", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) Update(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) Delete(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Delete", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) Delete(ctx context.Context, in *sub2.IdMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) GetQuery(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/GetQuery", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) GetQuery(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/GetQuery", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) Echo(ctx context.Context, in *grpc_gateway_examples_sub.StringMessage, opts ...grpc.CallOption) (*grpc_gateway_examples_sub.StringMessage, error) {
-	out := new(grpc_gateway_examples_sub.StringMessage)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Echo", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) Echo(ctx context.Context, in *sub.StringMessage, opts ...grpc.CallOption) (*sub.StringMessage, error) {
+	out := new(sub.StringMessage)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Echo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -539,40 +595,39 @@ func (c *aBitOfEverythingServiceClient) Echo(ctx context.Context, in *grpc_gatew
 
 func (c *aBitOfEverythingServiceClient) DeepPathEcho(ctx context.Context, in *ABitOfEverything, opts ...grpc.CallOption) (*ABitOfEverything, error) {
 	out := new(ABitOfEverything)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/DeepPathEcho", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/DeepPathEcho", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) NoBindings(ctx context.Context, in *google_protobuf2.Duration, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/NoBindings", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) NoBindings(ctx context.Context, in *duration.Duration, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/NoBindings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBitOfEverythingServiceClient) Timeout(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Timeout", in, out, c.cc, opts...)
+func (c *aBitOfEverythingServiceClient) Timeout(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Timeout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for ABitOfEverythingService service
-
+// ABitOfEverythingServiceServer is the server API for ABitOfEverythingService service.
 type ABitOfEverythingServiceServer interface {
 	Create(context.Context, *ABitOfEverything) (*ABitOfEverything, error)
 	CreateBody(context.Context, *ABitOfEverything) (*ABitOfEverything, error)
 	Lookup(context.Context, *sub2.IdMessage) (*ABitOfEverything, error)
-	Update(context.Context, *ABitOfEverything) (*google_protobuf1.Empty, error)
-	Delete(context.Context, *sub2.IdMessage) (*google_protobuf1.Empty, error)
-	GetQuery(context.Context, *ABitOfEverything) (*google_protobuf1.Empty, error)
+	Update(context.Context, *ABitOfEverything) (*empty.Empty, error)
+	Delete(context.Context, *sub2.IdMessage) (*empty.Empty, error)
+	GetQuery(context.Context, *ABitOfEverything) (*empty.Empty, error)
 	// Echo allows posting a StringMessage value.
 	//
 	// It also exposes multiple bindings.
@@ -580,10 +635,10 @@ type ABitOfEverythingServiceServer interface {
 	// This makes it useful when validating that the OpenAPI v2 API
 	// description exposes documentation correctly on all paths
 	// defined as additional_bindings in the proto.
-	Echo(context.Context, *grpc_gateway_examples_sub.StringMessage) (*grpc_gateway_examples_sub.StringMessage, error)
+	Echo(context.Context, *sub.StringMessage) (*sub.StringMessage, error)
 	DeepPathEcho(context.Context, *ABitOfEverything) (*ABitOfEverything, error)
-	NoBindings(context.Context, *google_protobuf2.Duration) (*google_protobuf1.Empty, error)
-	Timeout(context.Context, *google_protobuf1.Empty) (*google_protobuf1.Empty, error)
+	NoBindings(context.Context, *duration.Duration) (*empty.Empty, error)
+	Timeout(context.Context, *empty.Empty) (*empty.Empty, error)
 }
 
 func RegisterABitOfEverythingServiceServer(s *grpc.Server, srv ABitOfEverythingServiceServer) {
@@ -699,7 +754,7 @@ func _ABitOfEverythingService_GetQuery_Handler(srv interface{}, ctx context.Cont
 }
 
 func _ABitOfEverythingService_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(grpc_gateway_examples_sub.StringMessage)
+	in := new(sub.StringMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -711,7 +766,7 @@ func _ABitOfEverythingService_Echo_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Echo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABitOfEverythingServiceServer).Echo(ctx, req.(*grpc_gateway_examples_sub.StringMessage))
+		return srv.(ABitOfEverythingServiceServer).Echo(ctx, req.(*sub.StringMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -735,7 +790,7 @@ func _ABitOfEverythingService_DeepPathEcho_Handler(srv interface{}, ctx context.
 }
 
 func _ABitOfEverythingService_NoBindings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(google_protobuf2.Duration)
+	in := new(duration.Duration)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -747,13 +802,13 @@ func _ABitOfEverythingService_NoBindings_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/grpc.gateway.examples.examplepb.ABitOfEverythingService/NoBindings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABitOfEverythingServiceServer).NoBindings(ctx, req.(*google_protobuf2.Duration))
+		return srv.(ABitOfEverythingServiceServer).NoBindings(ctx, req.(*duration.Duration))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ABitOfEverythingService_Timeout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(google_protobuf1.Empty)
+	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -765,7 +820,7 @@ func _ABitOfEverythingService_Timeout_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/grpc.gateway.examples.examplepb.ABitOfEverythingService/Timeout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABitOfEverythingServiceServer).Timeout(ctx, req.(*google_protobuf1.Empty))
+		return srv.(ABitOfEverythingServiceServer).Timeout(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -819,10 +874,11 @@ var _ABitOfEverythingService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "examples/examplepb/a_bit_of_everything.proto",
 }
 
-// Client API for AnotherServiceWithNoBindings service
-
+// AnotherServiceWithNoBindingsClient is the client API for AnotherServiceWithNoBindings service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AnotherServiceWithNoBindingsClient interface {
-	NoBindings(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (*google_protobuf1.Empty, error)
+	NoBindings(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type anotherServiceWithNoBindingsClient struct {
@@ -833,19 +889,18 @@ func NewAnotherServiceWithNoBindingsClient(cc *grpc.ClientConn) AnotherServiceWi
 	return &anotherServiceWithNoBindingsClient{cc}
 }
 
-func (c *anotherServiceWithNoBindingsClient) NoBindings(ctx context.Context, in *google_protobuf1.Empty, opts ...grpc.CallOption) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
-	err := grpc.Invoke(ctx, "/grpc.gateway.examples.examplepb.AnotherServiceWithNoBindings/NoBindings", in, out, c.cc, opts...)
+func (c *anotherServiceWithNoBindingsClient) NoBindings(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/grpc.gateway.examples.examplepb.AnotherServiceWithNoBindings/NoBindings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for AnotherServiceWithNoBindings service
-
+// AnotherServiceWithNoBindingsServer is the server API for AnotherServiceWithNoBindings service.
 type AnotherServiceWithNoBindingsServer interface {
-	NoBindings(context.Context, *google_protobuf1.Empty) (*google_protobuf1.Empty, error)
+	NoBindings(context.Context, *empty.Empty) (*empty.Empty, error)
 }
 
 func RegisterAnotherServiceWithNoBindingsServer(s *grpc.Server, srv AnotherServiceWithNoBindingsServer) {
@@ -853,7 +908,7 @@ func RegisterAnotherServiceWithNoBindingsServer(s *grpc.Server, srv AnotherServi
 }
 
 func _AnotherServiceWithNoBindings_NoBindings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(google_protobuf1.Empty)
+	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -865,7 +920,7 @@ func _AnotherServiceWithNoBindings_NoBindings_Handler(srv interface{}, ctx conte
 		FullMethod: "/grpc.gateway.examples.examplepb.AnotherServiceWithNoBindings/NoBindings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnotherServiceWithNoBindingsServer).NoBindings(ctx, req.(*google_protobuf1.Empty))
+		return srv.(AnotherServiceWithNoBindingsServer).NoBindings(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -883,9 +938,11 @@ var _AnotherServiceWithNoBindings_serviceDesc = grpc.ServiceDesc{
 	Metadata: "examples/examplepb/a_bit_of_everything.proto",
 }
 
-func init() { proto.RegisterFile("examples/examplepb/a_bit_of_everything.proto", fileDescriptor1) }
+func init() {
+	proto.RegisterFile("examples/examplepb/a_bit_of_everything.proto", fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3)
+}
 
-var fileDescriptor1 = []byte{
+var fileDescriptor_a_bit_of_everything_98bcf31cfa4c18d3 = []byte{
 	// 1590 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x57, 0xcf, 0x6f, 0x1b, 0xc5,
 	0x17, 0xcf, 0xd8, 0x89, 0x13, 0x8f, 0xf3, 0xc3, 0x99, 0xb4, 0xa9, 0xeb, 0xe6, 0xfb, 0xcd, 0xd4,

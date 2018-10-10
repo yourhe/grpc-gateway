@@ -11,13 +11,17 @@ package examplepb
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/grpc-ecosystem/grpc-gateway/examples/sub"
-	"github.com/grpc-ecosystem/grpc-gateway/examples/sub2"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/utilities"
+	"github.com/ory/hydra/sdk/go/hydra"
+	"github.com/ory/hydra/sdk/go/hydra/swagger"
+	"github.com/yourhe/grpc-gateway/examples/sub"
+	"github.com/yourhe/grpc-gateway/examples/sub2"
+	"github.com/yourhe/grpc-gateway/policy"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -30,6 +34,7 @@ var _ io.Reader
 var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
+var HydraClient hydra.SDK
 
 var (
 	filter_ABitOfEverythingService_Create_0 = &utilities.DoubleArray{Encoding: map[string]int{"float_value": 0, "double_value": 1, "int64_value": 2, "uint64_value": 3, "int32_value": 4, "fixed64_value": 5, "fixed32_value": 6, "bool_value": 7, "string_value": 8, "uint32_value": 9, "sfixed32_value": 10, "sfixed64_value": 11, "sint32_value": 12, "sint64_value": 13, "nonConventionalNameValue": 14}, Base: []int{1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, Check: []int{0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}}
@@ -454,46 +459,47 @@ var (
 	headerAuthorize = "authorization"
 )
 
-// func exampleAuthFunc(w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
-func exampleAuthFunc(fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-
+// func exampleAuthFunc(rule *policy.PolicyRule, w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
+func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		fn(w, req, pathParams)
+		return
 		val := req.Header.Get(headerAuthorize)
+		var expectedScheme = "bearer"
 		if val == "" {
 			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
 			// runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with v:"+val, http.StatusUnauthorized)
 			return
 
 		}
 		splits := strings.SplitN(val, " ", 2)
 		if len(splits) < 2 {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Bad authorization string", http.StatusUnauthorized)
 
 			// return "", grpc.Errorf(codes.Unauthenticated, "Bad authorization string")
 			return
 		}
 		if strings.ToLower(splits[0]) != strings.ToLower(expectedScheme) {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with ", http.StatusUnauthorized)
 			return
 			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
 		}
 		token := splits[1]
-		if err != nil {
-			return nil, err
-		}
-		Accesstoken, _, err := hydraClinet.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
-			Action:   "write",
-			Resource: "rewrite:YourService:Echo",
+		Accesstoken, _, err := HydraClient.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
+			Action:   rule.Action,
+			Resource: rule.Resources,
 			Token:    token,
 		})
 		if err != nil {
-			return nil, err
-		}
-		if Accesstoken.Allowed != true {
-			runtime.DefaultOtherErrorHandler(w, req, err, http.StatusUnauthorized)
+			runtime.DefaultOtherErrorHandler(w, req, err.Error(), http.StatusUnauthorized)
 			return
 		}
+		if Accesstoken.Allowed != true {
+			runtime.DefaultOtherErrorHandler(w, req, "Request unauthenticated with not Allowed", http.StatusUnauthorized)
+			return
+		}
+		fn(w, req, pathParams)
 	}
 }
 
@@ -536,6 +542,7 @@ func RegisterABitOfEverythingServiceHandler(ctx context.Context, mux *runtime.Se
 func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ABitOfEverythingServiceClient) error {
 
 	mux.Handle("POST", pattern_ABitOfEverythingService_Create_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -566,6 +573,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("POST", pattern_ABitOfEverythingService_CreateBody_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -596,6 +604,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("GET", pattern_ABitOfEverythingService_Lookup_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -626,6 +635,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("PUT", pattern_ABitOfEverythingService_Update_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -656,6 +666,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("DELETE", pattern_ABitOfEverythingService_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -686,6 +697,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("GET", pattern_ABitOfEverythingService_GetQuery_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -716,6 +728,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("GET", pattern_ABitOfEverythingService_Echo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -746,6 +759,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("POST", pattern_ABitOfEverythingService_Echo_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -776,6 +790,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("GET", pattern_ABitOfEverythingService_Echo_2, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -806,6 +821,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("POST", pattern_ABitOfEverythingService_DeepPathEcho_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -836,6 +852,7 @@ func RegisterABitOfEverythingServiceHandlerClient(ctx context.Context, mux *runt
 	})
 
 	mux.Handle("GET", pattern_ABitOfEverythingService_Timeout_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -914,4 +931,78 @@ var (
 	forward_ABitOfEverythingService_DeepPathEcho_0 = runtime.ForwardResponseMessage
 
 	forward_ABitOfEverythingService_Timeout_0 = runtime.ForwardResponseMessage
+)
+
+// type RequestPolicyMap map[string]*policy.PolicyRule
+type RequestPolicyMap struct {
+	PolicyMap   map[string]*policy.PolicyRule
+	PatternList []ServiceMothedMap
+}
+type ServiceMothedMap struct {
+	Name    string
+	Pattern *runtime.Pattern
+}
+
+var (
+	RPM = RequestPolicyMap{
+		PolicyMap: map[string]*policy.PolicyRule{},
+		// PatternList => []ServiceMothedMap
+		PatternList: []ServiceMothedMap{
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/{float_value}/{double_value}/{int64_value}/separator/{uint64_value}/{int32_value}/{fixed64_value}/{fixed32_value}/{bool_value}/{string_value=strprefix/*}/{uint32_value}/{sfixed32_value}/{sfixed64_value}/{sint32_value}/{sint64_value}/{nonConventionalNameValue}",
+				Pattern: &pattern_ABitOfEverythingService_Create_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything",
+				Pattern: &pattern_ABitOfEverythingService_CreateBody_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/{uuid}",
+				Pattern: &pattern_ABitOfEverythingService_Lookup_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/{uuid}",
+				Pattern: &pattern_ABitOfEverythingService_Update_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/{uuid}",
+				Pattern: &pattern_ABitOfEverythingService_Delete_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/query/{uuid}",
+				Pattern: &pattern_ABitOfEverythingService_GetQuery_0,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/echo/{value}",
+				Pattern: &pattern_ABitOfEverythingService_Echo_0,
+			},
+
+			{
+				Name:    "/v2/example/echo",
+				Pattern: &pattern_ABitOfEverythingService_Echo_1,
+			},
+
+			{
+				Name:    "/v2/example/echo",
+				Pattern: &pattern_ABitOfEverythingService_Echo_2,
+			},
+
+			{
+				Name:    "/v1/example/a_bit_of_everything/{single_nested.name}",
+				Pattern: &pattern_ABitOfEverythingService_DeepPathEcho_0,
+			},
+
+			{
+				Name:    "/v2/example/timeout",
+				Pattern: &pattern_ABitOfEverythingService_Timeout_0,
+			},
+		},
+	}
 )
