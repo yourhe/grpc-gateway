@@ -1,0 +1,45 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/descriptor.proto";
+
+service YourService {
+    rpc Echo(Rule) returns (Rules) {
+        option (policy.policy) = {
+            action: "read"
+            resources: "*"
+            effect: "allow"
+        };
+        option (google.api.http) = {
+            post: "/v1/example/echo"
+            body: "*"
+        };
+    }
+}
+
+
+
+enum RewriteAction {
+    URL = 0;
+    JS = 1;
+    CONTEXT = 2;
+    LOCATION = 3;
+    COOKIES = 4;
+    HEAD = 5;
+  }
+  
+message Rule {
+    string regex = 1; //regex match pattran
+    string replace = 2;
+    string result = 3;
+    RewriteAction rwa = 4;
+    google.protobuf.Struct test = 6;
+    // google.protobuf.Any any =7;
+    // map<string, google.protobuf.Struct> field_name = 5;
+}
+
+message Rules {
+    repeated Rule rules = 1;
+}
+

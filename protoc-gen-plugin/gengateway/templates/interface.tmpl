@@ -1,0 +1,50 @@
+{{define "interface"}}
+
+// Handshake is a common handshake that is shared by plugin and host.
+var Handshake = plugin.HandshakeConfig{
+	// This isn't required when using VersionedPlugins
+	ProtocolVersion:  1,
+	MagicCookieKey:   "{{.GoPkg.Name | ToUpper}}_PLUGIN",
+	MagicCookieValue: "hello",
+}
+
+// PluginMap is the map of plugins we can dispense.
+var PluginMap = map[string]plugin.Plugin{
+	{{range .Services}}
+//	"{{.GetName | ToLower}}_grpc": &{{.GetName}}GRPCPlugin{},
+	"{{.GetName | ToLower}}":      &{{.GetName}}GRPCPlugin{},
+	{{end}}
+}
+
+{{range .Services}}
+// {{.GetName}} is the interface that we're exposing as a plugin.
+type {{.GetName}}Impl interface {
+	{{range .Methods}}
+	{{.| GoMethod}}
+	{{end}}
+//	Put(key string, value []byte) error
+//	Get(key string) ([]byte, error)
+}
+{{end}}
+
+{{range .Services}}
+//{{.GetName}}GRPCPlugin This is the implementation of plugin.GRPCPlugin so we can serve/consume this.
+type {{.GetName}}GRPCPlugin struct {
+	// GRPCPlugin must still implement the Plugin interface
+	plugin.Plugin
+	// Concrete implementation, written in Go. This is only used for plugins
+	// that are written in Go.
+	Impl {{.GetName}}
+}
+
+func (p *{{.GetName}}GRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) error {
+	Register{{.GetName}}Server(s, &GRPCServer{Impl: p.Impl})
+	return nil
+}
+
+func (p *{{.GetName}}GRPCPlugin) GRPCClient(ctx context.Context, broker *plugin.GRPCBroker, c *grpc.ClientConn) (interface{}, error) {
+	return &GRPCClient{client: New{{.GetName}}Client(c)}, nil
+}
+{{end}}
+
+{{end}}

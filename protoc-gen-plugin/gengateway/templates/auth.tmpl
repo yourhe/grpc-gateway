@@ -1,0 +1,38 @@
+package {{.GoPkg.Name}}
+import (
+ 	{{range $i := .Imports}}{{if $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
+
+ 	{{range $i := .Imports}}{{if not $i.Standard}}{{$i | printf "%s\n"}}{{end}}{{end}}
+
+ )
+
+{{template "interface" .}}
+
+{{range .Services}}
+    {{template "grpcclient" .}}
+    {{template "grpcservice" .}}
+
+
+
+func {{.GetName}}Serve(cfg *plugin.ServeConfig) {
+	plugin.Serve(cfg)
+}
+func {{.GetName}}ServeConfig(authimpl {{.GetName}}Impl) *plugin.ServeConfig {
+	grpcplugin := &{{.GetName}}GRPCPlugin{
+		Impl: authimpl,
+	}
+	// pluginMap is the map of plugins we can dispense.
+   
+	PluginMap["{{.GetName | ToLower}}"] = grpcplugin
+	conf := &plugin.ServeConfig{
+		HandshakeConfig: Handshake,
+		Plugins:         PluginMap,
+		// Logger:          &PluginLog{log: logrus.StandardLogger()},
+		// A non-nil value here enables gRPC serving for this plugin...
+		GRPCServer: plugin.DefaultGRPCServer,
+	}
+
+	return conf
+}
+
+{{end}}

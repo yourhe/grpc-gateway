@@ -1,0 +1,18 @@
+{{define "grpcservice"}}
+// {{.GetName}}GRPCServer is an implementation of {{.GetName}} that talks over RPC.
+type {{.GetName}}GRPCServer struct {
+	Impl   {{.GetName}}Impl
+	broker *plugin.GRPCBroker
+}
+
+{{range .Methods}}
+// {{.GetName}} impl Server {{.GetName}}
+func (m *{{.GetName}}GRPCServer) {{.GetName}}(ctx context.Context, in *{{.RequestType.GetName}}) (*{{.ResponseType.GetName}}, error) {
+	{{  . | GoService}}
+	out := {{.ResponseType.GetName}}{}
+	{{range $index,$field := .ResponseType.Fields}}{{if gt $index 0}}, {{end}}out.{{$field.GetName | CamelCase}}{{end}}, err =  m.Impl.{{.GetName}}({{range $index,$field := .RequestType.Fields}}{{if gt $index 0}}, {{end}}in.{{$field.GetName | CamelCase}}{{end}})
+	return &out, err
+}
+{{end}}
+{{end}}
+
