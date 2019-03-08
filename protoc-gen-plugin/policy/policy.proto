@@ -1,0 +1,21 @@
+syntax = "proto3";
+option go_package = "policy";
+
+// Echo Service
+//
+// Echo Service API consists of a single service which returns
+// a message.
+package grpc.gateway.policy;
+
+import "google/protobuf/descriptor.proto";
+
+
+message PolicyRule {
+    string action = 1;
+    string resources = 2;
+    string effect = 3;
+}
+extend google.protobuf.MethodOptions {
+    // See `PolicyRule`.
+    PolicyRule policy = 72295729;
+}

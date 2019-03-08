@@ -11,8 +11,8 @@ import (
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
-	gen "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/generator"
+	"github.com/yourhe/grpc-gateway/protoc-gen-plugin/descriptor"
+	gen "github.com/yourhe/grpc-gateway/protoc-gen-plugin/generator"
 	options "google.golang.org/genproto/googleapis/api/annotations"
 )
 
@@ -30,26 +30,15 @@ type generator struct {
 func New(reg *descriptor.Registry, useRequestContext bool) gen.Generator {
 	var imports []descriptor.GoPackage
 	for _, pkgpath := range []string{
-		"io",
-		"net/http",
-		"github.com/grpc-ecosystem/grpc-gateway/runtime",
-		"github.com/grpc-ecosystem/grpc-gateway/utilities",
-		"github.com/golang/protobuf/proto",
-		"golang.org/x/net/context",
+		"context",
 		"google.golang.org/grpc",
-		"google.golang.org/grpc/codes",
-		"google.golang.org/grpc/grpclog",
-		"google.golang.org/grpc/status",
-		// "github.com/ory/hydra/sdk/go/hydra/swagger",
-		// "github.com/ory/hydra/sdk/go/hydra",
-		// "github.com/yourhe/grpc-gateway/protoc-gen-grpc-gateway/policy"
-		"github.com/yourhe/grpc-gateway/policy",
-		// "strings",
+		"github.com/hashicorp/go-plugin",
 	} {
 		pkg := descriptor.GoPackage{
 			Path: pkgpath,
 			Name: path.Base(pkgpath),
 		}
+
 		if err := reg.ReserveGoPackageAlias(pkg.Name, pkg.Path); err != nil {
 			for i := 0; ; i++ {
 				alias := fmt.Sprintf("%s_%d", pkg.Name, i)
@@ -69,33 +58,40 @@ func (g *generator) Generate(targets []*descriptor.File) ([]*plugin.CodeGenerato
 	var files []*plugin.CodeGeneratorResponse_File
 	for _, file := range targets {
 		glog.V(1).Infof("Processing %s", file.GetName())
-		code, err := g.generate(file)
+
+		code, err := g.generate2(file)
 
 		if err == errNoTargetService {
 			glog.V(1).Infof("%s: %v", file.GetName(), err)
 			continue
 		}
+		// fmt.Println("asdf", err)
+
 		if err != nil {
 			return nil, err
 		}
 		formatted, err := format.Source([]byte(code))
-		if err != nil {
-			glog.Errorf("%v: %s", err, code)
-			return nil, err
-		}
+		// formatted := []byte(code)
+		// if err != nil {
+		// 	glog.Errorf("%v: %s", err, code)
+		// 	return nil, err
+		// }
 		name := file.GetName()
 		if file.GoPkg.Path != "" {
 			name = fmt.Sprintf("%s/%s", file.GoPkg.Path, filepath.Base(name))
 		}
 		ext := filepath.Ext(name)
 		base := strings.TrimSuffix(name, ext)
-		output := fmt.Sprintf("%s.pb.gw.go", base)
+		output := fmt.Sprintf("%s.plugin.go", base)
 		files = append(files, &plugin.CodeGeneratorResponse_File{
 			Name:    proto.String(output),
 			Content: proto.String(string(formatted)),
 		})
 		glog.V(1).Infof("Will emit %s", output)
+		// glog.V(1).Infof("Will emit %s", output)
 	}
+	// glog.Error(files)
+
 	return files, nil
 }
 
@@ -119,4 +115,43 @@ func (g *generator) generate(file *descriptor.File) (string, error) {
 		}
 	}
 	return applyTemplate(param{File: file, Imports: imports, UseRequestContext: g.useRequestContext})
+}
+
+func (g *generator) generate2(file *descriptor.File) (string, error) {
+	pkgSeen := make(map[string]bool)
+	var imports []descriptor.GoPackage
+	for _, pkg := range g.baseImports {
+		pkgSeen[pkg.Path] = true
+		imports = append(imports, pkg)
+	}
+	for _, svc := range file.Services {
+
+		for _, m := range svc.Methods {
+
+			pkg := m.RequestType.File.GoPkg
+			if m.Options == nil || !proto.HasExtension(m.Options, options.E_Http) ||
+				pkg == file.GoPkg || pkgSeen[pkg.Path] {
+				continue
+			}
+			pkgSeen[pkg.Path] = true
+			imports = append(imports, pkg)
+		}
+	}
+
+	for _, dep := range file.Dependency {
+		d, err := g.reg.LookupFile(dep)
+		if err != nil {
+			glog.Error(err)
+			continue
+		}
+		pkg := d.GoPkg
+		if pkgSeen[pkg.Path] {
+			continue
+		}
+		pkgSeen[pkg.Path] = true
+		imports = append(imports, pkg)
+		// glog.Fatal(d.GoPkg)
+	}
+
+	return applyTemplate2(param{File: file, Registry: g.reg, Imports: imports, UseRequestContext: g.useRequestContext})
 }

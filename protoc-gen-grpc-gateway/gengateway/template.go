@@ -132,7 +132,8 @@ var _ io.Reader
 var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
-var HydraClient hydra.SDK
+//var headerAuthorize = "authorization"
+
 `))
 
 	handlerTemplate = template.Must(template.New("handler").Parse(`
@@ -354,23 +355,8 @@ func Register{{$svc.GetName}}HandlerClient(ctx context.Context, mux *runtime.Ser
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
 	
-	{{if $m.Policy}}
-	// {{$m.Policy}}
-	//exampleAuthFunc(w,req,pathParams)
-	mux.Handle(
-		{{$b.HTTPMethod | printf "%q"}}, 
-		pattern_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}}, 
-		exampleAuthFunc(
-			&policy.PolicyRule{
-				Action:  "{{$svc.GetName}}:{{$m.GetName}}",
-			//	Action:    {{ $m.Policy.Action | printf "%q" }},
-				Resources: {{$m.Policy.Resources | printf "%q" }},
-				Effect:    "allow",
-			},
-			func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-	{{else}}
 	mux.Handle({{$b.HTTPMethod | printf "%q"}}, pattern_{{$svc.GetName}}_{{$m.GetName}}_{{$b.Index}}, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-	{{end}}
+	
 	{{- if $UseRequestContext }}
 		ctx, cancel := context.WithCancel(req.Context())
 	{{- else -}}
@@ -434,17 +420,17 @@ var (
 	
 )
 // type RequestPolicyMap map[string]*policy.PolicyRule 
-type RequestPolicyMap struct {
+type {{$svc.GetName}}RequestPolicyMap struct {
 	PolicyMap map[string]*policy.PolicyRule
-	PatternList []ServiceMothedMap
+	PatternList []{{$svc.GetName}}ServiceMothedMap
 }
-type ServiceMothedMap struct {
+type {{$svc.GetName}}ServiceMothedMap struct {
 	Name string
 	Pattern *runtime.Pattern
 }
 
 var (
-	RPM = RequestPolicyMap{
+	{{$svc.GetName}}RPM = {{$svc.GetName}}RequestPolicyMap{
 	PolicyMap: map[string]*policy.PolicyRule{
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
@@ -460,7 +446,7 @@ var (
 	{{end}}
 	},
 	// PatternList => []ServiceMothedMap
-	PatternList: []ServiceMothedMap{
+	PatternList: []{{$svc.GetName}}ServiceMothedMap{
 	{{range $m := $svc.Methods}}
 	{{range $b := $m.Bindings}}
 		{
@@ -478,11 +464,10 @@ var (
 {{end}}`))
 
 	_ = template.Must(trailerTemplate.New("hydra-warden").Parse(`
-var (
-headerAuthorize = "authorization"
-)
+
 // func exampleAuthFunc(rule *policy.PolicyRule, w http.ResponseWriter, req *http.Request, pathParams map[string]string) (context.Context, error) {
-func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+
+/*func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req *http.Request, pathParams map[string]string)) func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 	return func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		fn(w,req,pathParams)
 		return
@@ -508,7 +493,7 @@ func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req
 			// return "", grpc.Errorf(codes.Unauthenticated, "Request unauthenticated with "+expectedScheme)
 		}
 		token := splits[1]
-		Accesstoken, _, err := HydraClient.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
+		Accesstoken, _, err := hydraClient.DoesWardenAllowTokenAccessRequest(swagger.WardenTokenAccessRequest{
 			Action:   rule.Action,
 			Resource: rule.Resources,
 			Token:    token,
@@ -523,6 +508,6 @@ func exampleAuthFunc(rule *policy.PolicyRule, fn func(w http.ResponseWriter, req
 		}
 		fn(w,req,pathParams)
 	}
-}
+}*/
 	`))
 )

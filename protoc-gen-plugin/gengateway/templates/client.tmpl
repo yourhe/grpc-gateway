@@ -1,0 +1,31 @@
+{{define "grpcclient"}}
+
+type {{.GetName}}PluginClient struct {
+	client *plugin.Client
+	sync.Mutex
+	{{.GetName}}Impl
+}
+
+func (ac *AuthPluginClient) Close() error {
+	ac.client.Kill()
+	return nil
+}
+
+// GRPCClient is an implementation of {{.GetName}} that talks over RPC.
+type {{.GetName}}GRPCClient struct {
+	client {{.GetName}}Client
+	broker *plugin.GRPCBroker
+}
+{{ $svc :=  .}}
+	
+
+{{range $method := .Methods}}
+func (m *{{.GetName}}GRPCClient) {{$method| GoMethod}} {
+	{{  $method | GoService}}
+	{{$out := "out"}}
+	//var out = &{{$method.ResponseType.GetName}}{}
+	{{$out}}, err := m.client.{{$method.GetName}}(context.Background(), in)
+	return  {{$method.ResponseType.Fields | GoFieldsName $out }}, err
+}
+{{end}}
+{{end}}

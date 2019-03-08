@@ -16,6 +16,14 @@ SWAGGER_PLUGIN_SRC= utilities/doc.go \
 SWAGGER_PLUGIN_PKG=$(PKG)/protoc-gen-swagger
 GATEWAY_PLUGIN=bin/protoc-gen-grpc-gateway
 REDUX_PLUGIN=bin/protoc-gen-react-redux
+
+PLUGIN_PLUGIN=bin/protoc-gen-plugin
+PLUGIN_PLUGIN_PKG=$(PKG)/protoc-gen-plugin
+PLUGIN_PLUGIN_SRC= utilities/doc.go \
+		    utilities/pattern.go \
+		    utilities/trie.go \
+		    protoc-gen-plugin \
+
 GATEWAY_PLUGIN_PKG=$(PKG)/protoc-gen-grpc-gateway
 GATEWAY_PLUGIN_SRC= utilities/doc.go \
 		    utilities/pattern.go \
@@ -191,7 +199,6 @@ test_rewrite: $(GATEWAY_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
 	-I$(REWRITE_DIR) \
 	--go_out=plugins=grpc:$(REWRITE_DIR)/. \
 	$(EXAMPLES_REWRITE_POLICY)
-	
 	protoc -I $(PROTOC_INC_PATH) \
 	-I$(GOPATH_DIR) \
 	-I. \
@@ -200,22 +207,7 @@ test_rewrite: $(GATEWAY_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
 	--plugin=$(GATEWAY_PLUGIN) \
 	--grpc-gateway_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(REWRITE_DIR)/. \
 	$(EXAMPLES_REWRITE_POLICY)
-test_redux: $(REDUX_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
-	# protoc -I/usr/local/include -I. \
-	# -I$(GOPATH_DIR) \
-	# -I$(GOOGLEAPIS_DIR) \
-	# -I$(REWRITE_DIR) \
-	# --go_out=plugins=grpc:$(REWRITE_DIR)/. \
-	# $(EXAMPLES_REWRITE_POLICY)
-	
-	# protoc -I $(PROTOC_INC_PATH) \
-	# -I$(GOPATH_DIR) \
-	# -I. \
-	# -I$(GOOGLEAPIS_DIR) \
-	# -I$(REWRITE_DIR) \
-	# --plugin=$(REDUX_PLUGIN) \
-	# --react-redux_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. \
-	# $(EXAMPLES_REWRITE_POLICY)
+test_redux: $(PLUGIN_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
 	protoc -I $(PROTOC_INC_PATH) \
 	-I$(GOPATH_DIR) \
 	-I. \
@@ -224,6 +216,22 @@ test_redux: $(REDUX_PLUGIN) $(EXAMPLES_REWRITE_POLICY)
 	--plugin=$(REDUX_PLUGIN) \
 	--react-redux_out=logtostderr=true,$(PKGMAP)$(ADDITIONAL_FLAGS):$(OUTPUT_DIR)/. \
 	--js_out=import_style=browser,binary:$(OUTPUT_DIR)/. $(EXAMPLES_REWRITE_POLICY)
-	# mkdir /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/public/policy-react-app/src/proto/ -p
-	# cp -R $(OUTPUT_DIR)/proto/rewrite/*.* /Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/public/policy-react-app/src/proto/
-.PHONY: generate examples test_rewrite test1 test lint clean distclean realclean 
+
+$(PLUGIN_PLUGIN): $(RUNTIME_GO) $(PLUGIN_PLUGIN_SRC)
+	rm -rf $(PLUGIN_PLUGIN)
+	go build -o $@ $(PLUGIN_PLUGIN_PKG)
+EXAMPLES_PLUGIN=/Users/yorhe/go/src/gitlab.iyorhe.com/wfgz/reverseproxy/plugin/auth/proto/auth.proto
+cleanplugin:
+	rm -f $(PLUGIN_PLUGIN)
+test_plugin: cleanplugin $(PLUGIN_PLUGIN) $(EXAMPLES_PLUGIN)
+	protoc -I $(PROTOC_INC_PATH) \
+	-I$(GOPATH_DIR) \
+	-I. \
+	-I$(GOOGLEAPIS_DIR) \
+	-I$(REWRITE_DIR) \
+	--plugin=$(PLUGIN_PLUGIN) \
+	--plugin_out=logtostderr=true:$(OUTPUT_DIR)/. \
+	$(EXAMPLES_PLUGIN)
+	# rm -rf $(PLUGIN_PLUGIN)
+build_gateway: $(GATEWAY_PLUGIN)
+.PHONY: build_gateway generate examples test_rewrite test1 test lint clean distclean realclean test_plugin

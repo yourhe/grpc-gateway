@@ -1,0 +1,81 @@
+package auth
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/sirupsen/logrus"
+
+	hclog "github.com/hashicorp/go-hclog"
+)
+
+type PluginLog struct {
+	log *logrus.Logger
+}
+
+func (plog *PluginLog) Trace(msg string, args ...interface{}) {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) Debug(msg string, args ...interface{}) {
+	// panic("not implemented")
+	plog.log.Debugf(msg, args)
+}
+
+func (plog *PluginLog) Info(msg string, args ...interface{}) {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) Warn(msg string, args ...interface{}) {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) Error(msg string, args ...interface{}) {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) IsTrace() bool {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) IsDebug() bool {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) IsInfo() bool {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) IsWarn() bool {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) IsError() bool {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) With(args ...interface{}) hclog.Logger {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) Named(name string) hclog.Logger {
+	// panic("not implemented")
+	fmt.Println(name)
+	return plog
+}
+
+func (plog *PluginLog) ResetNamed(name string) hclog.Logger {
+	fmt.Println(name)
+	return plog
+}
+
+func (plog *PluginLog) SetLevel(level hclog.Level) {
+	panic("not implemented")
+}
+
+func (plog *PluginLog) StandardLogger(opts *hclog.StandardLoggerOptions) *log.Logger {
+	// panic("not implemented")
+	// panic("not implemented")
+	return nil
+
+}

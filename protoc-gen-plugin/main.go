@@ -18,8 +18,8 @@ import (
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/yourhe/grpc-gateway/protoc-gen-react-redux/descriptor"
-	"github.com/yourhe/grpc-gateway/protoc-gen-react-redux/gengateway"
+	"github.com/yourhe/grpc-gateway/protoc-gen-plugin/descriptor"
+	"github.com/yourhe/grpc-gateway/protoc-gen-plugin/gengateway"
 )
 
 var (
@@ -55,7 +55,9 @@ func main() {
 	if err != nil {
 		glog.Fatal(err)
 	}
+
 	if req.Parameter != nil {
+
 		for _, p := range strings.Split(req.GetParameter(), ",") {
 			spec := strings.SplitN(p, "=", 2)
 			if len(spec) == 1 {
@@ -65,21 +67,24 @@ func main() {
 				continue
 			}
 			name, value := spec[0], spec[1]
+
 			if strings.HasPrefix(name, "M") {
 				reg.AddPkgMap(name[1:], value)
+
 				continue
 			}
+
 			if err := flag.CommandLine.Set(name, value); err != nil {
 				glog.Fatalf("Cannot set flag %s", p)
 			}
 		}
 	}
-	// fmt.Println(req)
-	g := gengateway.New(reg, *useRequestContext)
 
+	g := gengateway.New(reg, *useRequestContext)
 	reg.SetPrefix(*importPrefix)
 	reg.SetAllowDeleteBody(*allowDeleteBody)
 	if err := reg.Load(req); err != nil {
+
 		emitError(err)
 		return
 	}
@@ -91,9 +96,15 @@ func main() {
 			glog.Fatal(err)
 		}
 		targets = append(targets, f)
+
 	}
 
 	out, err := g.Generate(targets)
+
+	// glog.Error(out, err)
+
+	// fmt.Println(out, err)
+
 	glog.V(1).Info("Processed code generator request")
 	if err != nil {
 		emitError(err)
